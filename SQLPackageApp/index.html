@@ -1,1135 +1,1847 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SQL Package Generator</title>
-<meta name="theme-color" content="#f5f3ef">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="SQL Packager">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#f5f3ef;
-  --surface:#ffffff;
-  --surface2:#faf9f7;
-  --border:#e8e4dc;
-  --border2:#d4cfc6;
-  --text:#1c1917;
-  --text2:#6b6760;
-  --text3:#a09c97;
-  --accent:#e85d26;
-  --accent-bg:#fff3ee;
-  --accent-border:#ffd5c2;
-  --blue:#2563eb;
-  --blue-bg:#eff6ff;
-  --blue-border:#bfdbfe;
-  --red:#dc2626;
-  --red-bg:#fff5f5;
-  --red-border:#fecaca;
-  --green:#059669;
-  --green-bg:#ecfdf5;
-  --green-border:#a7f3d0;
-  --amber:#d97706;
-  --amber-bg:#fffbeb;
-  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
-  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Package Generator</title>
+  <meta name="theme-color" content="#f5f3ef">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SQL Packager">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #ffffff;
+      --surface2: #faf9f7;
+      --border: #e8e4dc;
+      --border2: #d4cfc6;
+      --text: #1c1917;
+      --text2: #6b6760;
+      --text3: #a09c97;
+      --accent: #e85d26;
+      --accent-bg: #fff3ee;
+      --accent-border: #ffd5c2;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --blue-border: #bfdbfe;
+      --red: #dc2626;
+      --red-bg: #fff5f5;
+      --red-border: #fecaca;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --green-border: #a7f3d0;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .08), 0 2px 4px rgba(0, 0, 0, .04);
+    }
 
-/* ── SIDEBAR LAYOUT ── */
-.layout{display:flex;min-height:100vh}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* Sidebar */
-.sidebar{
-  width:220px;flex-shrink:0;
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  position:fixed;top:0;left:0;height:100vh;
-  z-index:100;
-}
-.sidebar-top{
-  padding:1.4rem 1.2rem 1rem;
-  border-bottom:1px solid var(--border);
-}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-icon{
-  width:36px;height:36px;border-radius:10px;
-  background:var(--accent);
-  display:flex;align-items:center;justify-content:center;
-  font-size:17px;color:#fff;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(232,93,38,.35);
-}
-.brand-name{
-  font-family:'Playfair Display',serif;font-size:15px;font-weight:700;
-  color:var(--text);line-height:1.2;
-}
-.brand-sub{font-size:10px;color:var(--text3);margin-top:1px}
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh
+    }
 
-/* Nav */
-.nav{padding:.8rem .8rem;flex:1}
-.nav-label{
-  font-size:10px;font-weight:600;color:var(--text3);
-  text-transform:uppercase;letter-spacing:.08em;
-  padding:0 .4rem;margin-bottom:.4rem;margin-top:.6rem;
-}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 12px;border-radius:8px;cursor:pointer;
-  font-size:13px;font-weight:500;color:var(--text2);
-  border:none;background:none;width:100%;text-align:left;
-  transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;
-  margin-bottom:2px;
-}
-.nav-item:hover{background:var(--bg);color:var(--text)}
-.nav-item.on{background:var(--accent-bg);color:var(--accent);font-weight:600}
-.nav-item .ni{
-  width:28px;height:28px;border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;flex-shrink:0;
-  background:var(--bg);
-}
-.nav-item.on .ni{background:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(232,93,38,.3)}
-.nav-item.del.on{background:var(--red-bg);color:var(--red)}
-.nav-item.del.on .ni{background:var(--red);box-shadow:0 2px 6px rgba(220,38,38,.3)}
-.nav-item.sp.on{background:var(--amber-bg);color:var(--amber)}
-.nav-item.sp.on .ni{background:var(--amber);color:#fff;box-shadow:0 2px 6px rgba(217,119,6,.3)}
-.nav-item.mx.on{background:var(--blue-bg);color:var(--blue)}
-.nav-item.mx.on .ni{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.3)}
+    /* ── SIDEBAR LAYOUT ── */
+    .layout {
+      display: flex;
+      min-height: 100vh
+    }
 
-.sidebar-footer{
-  padding:1rem;border-top:1px solid var(--border);
-}
-.install-btn{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  width:100%;padding:9px;font-size:12px;font-weight:500;
-  border-radius:8px;cursor:pointer;
-  border:1px solid var(--border2);
-  background:var(--surface2);color:var(--text2);
-  transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;
-}
-.install-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100;
+    }
 
-/* Main content */
-.main{
-  margin-left:220px;flex:1;
-  padding:2rem 2rem;
-  max-width:calc(100vw - 220px);
-}
+    .sidebar-top {
+      padding: 1.4rem 1.2rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
 
-/* Page header */
-.page-header{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  flex-wrap:wrap;gap:12px;margin-bottom:1.5rem;
-}
-.page-title{
-  font-family:'Playfair Display',serif;
-  font-size:26px;font-weight:700;color:var(--text);
-}
-.page-sub{font-size:13px;color:var(--text3);margin-top:3px}
-.mode-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:5px 12px;border-radius:99px;
-  font-size:12px;font-weight:600;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
 
-/* Cards */
-.card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:14px;padding:1.4rem 1.6rem;
-  margin-bottom:1rem;
-  box-shadow:var(--shadow);
-}
-.sec{
-  font-size:11px;font-weight:600;color:var(--text3);
-  text-transform:uppercase;letter-spacing:.08em;
-  margin-bottom:12px;display:flex;align-items:center;gap:6px;
-}
-.sec em{
-  font-size:12px;font-weight:400;text-transform:none;
-  letter-spacing:0;color:var(--text3);font-style:normal;
-}
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(232, 93, 38, .35);
+    }
 
-/* Grid */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.g2{grid-template-columns:1fr}}
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
 
-/* Form fields */
-label{font-size:11px;font-weight:500;color:var(--text2);display:block;margin-bottom:5px}
-input[type=text],textarea{
-  width:100%;font-family:'Fira Code',monospace;font-size:13px;
-  padding:9px 11px;border:1px solid var(--border);border-radius:8px;
-  background:var(--surface2);color:var(--text);outline:none;
-  transition:border-color .15s,box-shadow .15s;
-}
-input[type=text]:focus,textarea:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(232,93,38,.1);
-  background:var(--surface);
-}
-input[type=text]::placeholder,textarea::placeholder{color:var(--text3)}
-textarea{resize:vertical;font-size:12.5px;line-height:1.6}
+    .brand-sub {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 1px
+    }
 
-/* Buttons */
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:9px 16px;font-size:13px;font-weight:500;
-  border-radius:8px;cursor:pointer;
-  border:1px solid var(--border2);
-  background:var(--surface);color:var(--text2);
-  transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;
-  box-shadow:var(--shadow);
-}
-.btn:hover{background:var(--bg);border-color:var(--border2);color:var(--text)}
-.btn:active{transform:scale(.98)}
-.btn.dk{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(232,93,38,.3)}
-.btn.dk:hover{background:#d44e1e;box-shadow:0 4px 12px rgba(232,93,38,.4)}
-.btn.gn{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
-.btn.gn:hover{background:#d1fae5}
-.btn.rd{color:var(--red);border-color:var(--red-border);background:var(--red-bg)}
-.btn.rd:hover{background:#fee2e2}
-.brow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.xb{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px 5px;border-radius:4px;transition:all .15s;line-height:1}
-.xb:hover{color:var(--red);background:var(--red-bg)}
+    /* Nav */
+    .nav {
+      padding: .8rem .8rem;
+      flex: 1
+    }
 
-/* Status */
-.st{margin-top:10px;font-size:12px;color:var(--text2);min-height:18px}
-.ok{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green);margin-right:4px;border:1px solid var(--green-border)}
-.er{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;background:var(--red-bg);color:var(--red);margin-right:4px;border:1px solid var(--red-border)}
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 0 .4rem;
+      margin-bottom: .4rem;
+      margin-top: .6rem;
+    }
 
-/* Info */
-.inf{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px}
-.inf strong{color:var(--text)}
-.inf code{background:var(--bg);padding:1px 5px;border-radius:4px;font-family:'Fira Code',monospace;font-size:11px;color:var(--accent)}
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: all .15s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 2px;
+    }
 
-/* Tables */
-.qt{width:100%;border-collapse:collapse}
-.qt th{font-size:10px;color:var(--text3);font-weight:600;text-align:left;padding:0 8px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em}
-.qt td{padding:5px 8px;vertical-align:middle;border-bottom:1px solid rgba(0,0,0,.03)}
-.qt tr:last-child td{border-bottom:none}
-.qt td input[type=text]{font-size:12px;padding:6px 8px}
-.nm{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:var(--bg);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text3);font-family:'Fira Code',monospace}
+    .nav-item:hover {
+      background: var(--bg);
+      color: var(--text)
+    }
 
-/* Mixed rows */
-.mrow{border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid var(--border);box-shadow:var(--shadow)}
-.mh{display:flex;align-items:center;gap:8px;padding:8px 12px}
-.mb{padding:10px 12px;background:var(--surface);display:grid;gap:8px}
-.mb label{font-size:11px;color:var(--text3);margin-bottom:3px}
-.mb input[type=text]{font-size:12px;padding:6px 8px}
-.tu{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
-.td2{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red)}
+    .nav-item.on {
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-weight: 600
+    }
 
-/* Output */
-.out-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;overflow:hidden;
-  margin-bottom:1rem;box-shadow:var(--shadow-md);
-}
-.out-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:.9rem 1.4rem;background:var(--surface2);
-  border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;
-}
-.out-bar-left{display:flex;align-items:center;gap:10px}
-.out-dots{display:flex;gap:5px}
-.out-dots span{width:10px;height:10px;border-radius:50%}
-.out-dots span:nth-child(1){background:#ff5f57}
-.out-dots span:nth-child(2){background:#febc2e}
-.out-dots span:nth-child(3){background:#28c840}
-.out-fn{font-family:'Fira Code',monospace;font-size:11px;color:var(--text3)}
-.out-pre{
-  padding:1.4rem 1.6rem;
-  font-family:'Fira Code',monospace;font-size:12.5px;
-  color:#3d3530;white-space:pre;overflow-x:auto;line-height:1.7;
-  max-height:500px;overflow-y:auto;
-  background:var(--surface);
-}
-.cpd{font-size:11px;color:var(--green);opacity:0;transition:opacity .3s}
-.cpd.on{opacity:1}
+    .nav-item .ni {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
 
-/* Bulk import */
-.bulk-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
-.bulk-head{background:var(--surface2);padding:9px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
-.bulk-body{padding:12px 14px;background:var(--surface)}
+    .nav-item.on .ni {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(232, 93, 38, .3)
+    }
 
-/* Divider */
-.div{height:1px;background:var(--border);margin:16px 0}
+    .nav-item.del.on {
+      background: var(--red-bg);
+      color: var(--red)
+    }
 
-/* Panels */
-.pnl{display:none}
-.pnl.on{display:block;animation:fi .2s ease}
-@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
-.hide{display:none}
+    .nav-item.del.on .ni {
+      background: var(--red);
+      box-shadow: 0 2px 6px rgba(220, 38, 38, .3)
+    }
 
-/* Install modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:9999;align-items:center;justify-content:center;padding:1rem}
-.modal-bg.on{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.8rem;max-width:440px;width:100%;position:relative;box-shadow:var(--shadow-md)}
+    .nav-item.sp.on {
+      background: var(--amber-bg);
+      color: var(--amber)
+    }
 
-/* Responsive */
-@media(max-width:700px){
-  .sidebar{width:100%;height:auto;position:relative;flex-direction:row}
-  .main{margin-left:0;padding:1rem}
-  .layout{flex-direction:column}
-  .nav{display:flex;flex-direction:row;gap:4px;padding:.5rem;overflow-x:auto}
-  .nav-label{display:none}
-  .nav-item{flex-direction:column;padding:8px 10px;min-width:70px;font-size:11px;gap:4px}
-  .sidebar-footer,.sidebar-top .brand-sub{display:none}
-}
+    .nav-item.sp.on .ni {
+      background: var(--amber);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, .3)
+    }
 
-/* Scrollbar */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--text3)}
-</style>
+    .nav-item.mx.on {
+      background: var(--blue-bg);
+      color: var(--blue)
+    }
+
+    .nav-item.mx.on .ni {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, .3)
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .install-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 9px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text2);
+      transition: all .15s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .install-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg)
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      padding: 2rem 2rem;
+      max-width: calc(100vw - 220px);
+    }
+
+    /* Page header */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .page-sub {
+      font-size: 13px;
+      color: var(--text3);
+      margin-top: 3px
+    }
+
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .sec {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sec em {
+      font-size: 12px;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--text3);
+      font-style: normal;
+    }
+
+    /* Grid */
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    @media(max-width:700px) {
+      .g2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* Form fields */
+    label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text2);
+      display: block;
+      margin-bottom: 5px
+    }
+
+    input[type=text],
+    textarea {
+      width: 100%;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    input[type=text]:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232, 93, 38, .1);
+      background: var(--surface);
+    }
+
+    input[type=text]::placeholder,
+    textarea::placeholder {
+      color: var(--text3)
+    }
+
+    textarea {
+      resize: vertical;
+      font-size: 12.5px;
+      line-height: 1.6
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--text2);
+      transition: all .15s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      box-shadow: var(--shadow);
+    }
+
+    .btn:hover {
+      background: var(--bg);
+      border-color: var(--border2);
+      color: var(--text)
+    }
+
+    .btn:active {
+      transform: scale(.98)
+    }
+
+    .btn.dk {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(232, 93, 38, .3)
+    }
+
+    .btn.dk:hover {
+      background: #d44e1e;
+      box-shadow: 0 4px 12px rgba(232, 93, 38, .4)
+    }
+
+    .btn.gn {
+      background: var(--green-bg);
+      color: var(--green);
+      border-color: var(--green-border)
+    }
+
+    .btn.gn:hover {
+      background: #d1fae5
+    }
+
+    .btn.rd {
+      color: var(--red);
+      border-color: var(--red-border);
+      background: var(--red-bg)
+    }
+
+    .btn.rd:hover {
+      background: #fee2e2
+    }
+
+    .brow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px
+    }
+
+    .xb {
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      transition: all .15s;
+      line-height: 1
+    }
+
+    .xb:hover {
+      color: var(--red);
+      background: var(--red-bg)
+    }
+
+    /* Status */
+    .st {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text2);
+      min-height: 18px
+    }
+
+    .ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--green-bg);
+      color: var(--green);
+      margin-right: 4px;
+      border: 1px solid var(--green-border)
+    }
+
+    .er {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--red-bg);
+      color: var(--red);
+      margin-right: 4px;
+      border: 1px solid var(--red-border)
+    }
+
+    /* Info */
+    .inf {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 14px
+    }
+
+    .inf strong {
+      color: var(--text)
+    }
+
+    .inf code {
+      background: var(--bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      color: var(--accent)
+    }
+
+    /* Tables */
+    .qt {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .qt th {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 600;
+      text-align: left;
+      padding: 0 8px 10px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .qt td {
+      padding: 5px 8px;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(0, 0, 0, .03)
+    }
+
+    .qt tr:last-child td {
+      border-bottom: none
+    }
+
+    .qt td input[type=text] {
+      font-size: 12px;
+      padding: 6px 8px
+    }
+
+    .nm {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      font-family: 'Fira Code', monospace
+    }
+
+    /* Mixed rows */
+    .mrow {
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow)
+    }
+
+    .mh {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px
+    }
+
+    .mb {
+      padding: 10px 12px;
+      background: var(--surface);
+      display: grid;
+      gap: 8px
+    }
+
+    .mb label {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 3px
+    }
+
+    .mb input[type=text] {
+      font-size: 12px;
+      padding: 6px 8px
+    }
+
+    .tu {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--blue)
+    }
+
+    .td2 {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--red)
+    }
+
+    /* Output */
+    .out-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .out-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .9rem 1.4rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .out-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .out-dots {
+      display: flex;
+      gap: 5px
+    }
+
+    .out-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%
+    }
+
+    .out-dots span:nth-child(1) {
+      background: #ff5f57
+    }
+
+    .out-dots span:nth-child(2) {
+      background: #febc2e
+    }
+
+    .out-dots span:nth-child(3) {
+      background: #28c840
+    }
+
+    .out-fn {
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      color: var(--text3)
+    }
+
+    .out-pre {
+      padding: 1.4rem 1.6rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 12.5px;
+      color: #3d3530;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.7;
+      max-height: 500px;
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .cpd {
+      font-size: 11px;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity .3s
+    }
+
+    .cpd.on {
+      opacity: 1
+    }
+
+    /* Bulk import */
+    .bulk-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow)
+    }
+
+    .bulk-head {
+      background: var(--surface2);
+      padding: 9px 14px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .bulk-body {
+      padding: 12px 14px;
+      background: var(--surface)
+    }
+
+    /* Divider */
+    .div {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0
+    }
+
+    /* Panels */
+    .pnl {
+      display: none
+    }
+
+    .pnl.on {
+      display: block;
+      animation: fi .2s ease
+    }
+
+    @keyframes fi {
+      from {
+        opacity: 0;
+        transform: translateY(3px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .hide {
+      display: none
+    }
+
+    /* Install modal */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      backdrop-filter: blur(3px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem
+    }
+
+    .modal-bg.on {
+      display: flex
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      max-width: 440px;
+      width: 100%;
+      position: relative;
+      box-shadow: var(--shadow-md)
+    }
+
+    /* Responsive */
+    @media(max-width:700px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 1rem
+      }
+
+      .layout {
+        flex-direction: column
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        padding: .5rem;
+        overflow-x: auto
+      }
+
+      .nav-label {
+        display: none
+      }
+
+      .nav-item {
+        flex-direction: column;
+        padding: 8px 10px;
+        min-width: 70px;
+        font-size: 11px;
+        gap: 4px
+      }
+
+      .sidebar-footer,
+      .sidebar-top .brand-sub {
+        display: none
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 3px
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text3)
+    }
+  </style>
 </head>
+
 <body>
-<div class="layout">
+  <div class="layout">
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-top">
-      <div class="brand">
-        <div class="brand-icon">&#128230;</div>
-        <div>
-          <div class="brand-name">SQL Packager</div>
-          <div class="brand-sub">Data fix generator</div>
-        </div>
-      </div>
-    </div>
-
-    <nav class="nav">
-      <div class="nav-label">Package Type</div>
-
-      <button class="nav-item on" id="n-update" onclick="sw('update')">
-        <span class="ni">&#9998;</span> Update
-      </button>
-      <button class="nav-item del" id="n-delete" onclick="sw('delete')">
-        <span class="ni">&#128465;</span> Delete
-      </button>
-      <button class="nav-item sp" id="n-sp" onclick="sw('sp')">
-        <span class="ni">&#9881;</span> SP / Hook
-      </button>
-      <button class="nav-item mx" id="n-mixed" onclick="sw('mixed')">
-        <span class="ni">&#9889;</span> Mixed
-      </button>
-    </nav>
-
-
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- Page header -->
-    <div class="page-header">
-      <div>
-        <div class="page-title" id="pageTitle">Update Package</div>
-        <div class="page-sub">Fill client details, paste your queries, download .pkg</div>
-      </div>
-    </div>
-
-    <!-- CLIENT DETAILS -->
-    <div class="card">
-      <div class="sec">Client Details</div>
-      <div class="g2">
-        <div><label>Client Pin</label><input type="text" id="pin" placeholder="100030769" oninput="regen()"></div>
-        <div><label>Client Name</label><input type="text" id="cname" placeholder="Affinius Capital LLC" oninput="regen()"></div>
-        <div><label>Case #</label><input type="text" id="caseid" placeholder="17932288" oninput="regen()"></div>
-        <div><label>Date</label><input type="text" id="dt" placeholder="DD/MM/YYYY" oninput="regen()"></div>
-        <div><label>Created By</label><input type="text" id="createdby" placeholder="e.g. John Smith" oninput="regen()"></div>
-        <div><label>Script Name</label><input type="text" id="scriptname" placeholder="e.g. Fix_Property_SADDR1" oninput="regen()"></div>
-      </div>
-    </div>
-
-    <!-- UPDATE -->
-    <div class="pnl on" id="p-update">
-      <div class="card">
-        <div class="sec">UPDATE Queries</div>
-        <div class="inf">Paste one or more UPDATE statements. Each gets its own <strong>INSERT into DatafixHistory + UPDATE + GO</strong> block.</div>
-        <textarea id="uq" rows="6" placeholder="UPDATE Property SET SADDR1 = LTRIM(RTRIM(REPLACE(SADDR1, CHAR(9), ''))) WHERE SCODE = '100223'"></textarea>
-        <div class="brow">
-          <button class="btn dk" onclick="parseU()">&#9654;&nbsp; Parse Queries</button>
-          <button class="btn" onclick="clr('update')">&#8635;&nbsp; Clear</button>
-        </div>
-        <div class="st" id="ust"></div>
-      </div>
-      <div class="card hide" id="ucard">
-        <div class="sec">Parsed Rows <em>— each row = one INSERT + UPDATE + GO block</em></div>
-        <table class="qt">
-          <thead><tr><th style="width:32px">#</th><th style="width:110px">Table</th><th style="width:110px">Column</th><th>New Value</th><th>WHERE</th><th>FROM / JOIN</th><th style="width:34px"></th></tr></thead>
-          <tbody id="ub"></tbody>
-        </table>
-        <div class="brow" style="margin-top:12px"><button class="btn" onclick="addU()">+ Add Row</button></div>
-      </div>
-    </div>
-
-    <!-- DELETE -->
-    <div class="pnl" id="p-delete">
-      <div class="card">
-        <div class="sec">DELETE Queries</div>
-        <div class="inf">Paste one or more DELETE statements. Each gets a <strong>SELECT * INTO bk_TABLE</strong> backup + delete. Duplicate tables auto-get <strong>_1, _2</strong> suffixes.</div>
-        <textarea id="dq" rows="6" placeholder="DELETE FROM INTEXCHANGERATE WHERE dtdate = '04/03/2026'"></textarea>
-        <div class="brow">
-          <button class="btn dk" style="background:var(--red);border-color:var(--red);box-shadow:0 2px 8px rgba(220,38,38,.25)" onclick="parseD()">&#9654;&nbsp; Parse Queries</button>
-          <button class="btn" onclick="clr('delete')">&#8635;&nbsp; Clear</button>
-        </div>
-        <div class="st" id="dst"></div>
-      </div>
-      <div class="card hide" id="dcard">
-        <div class="sec">Parsed Rows <em>— edit backup table name if needed</em></div>
-        <table class="qt">
-          <thead><tr><th style="width:32px">#</th><th style="width:150px">Table</th><th style="width:175px">Backup Table</th><th>WHERE</th><th style="width:34px"></th></tr></thead>
-          <tbody id="db"></tbody>
-        </table>
-        <div class="brow" style="margin-top:12px"><button class="btn" onclick="addD()">+ Add Row</button></div>
-      </div>
-    </div>
-
-    <!-- SP -->
-    <div class="pnl" id="p-sp">
-      <div class="card">
-        <div class="sec">SP / Hook Code</div>
-        <div class="inf">Paste your full stored procedure or hook code. Wrapped in package format as-is — no modifications.</div>
-        <textarea id="spc" rows="14" placeholder="CREATE OR ALTER PROCEDURE sp_YourProcedure&#10;    @Param DATETIME&#10;AS&#10;BEGIN&#10;    -- your code here&#10;END" oninput="onSp()"></textarea>
-      </div>
-      <div class="card">
-        <div class="sec">EXEC Statements <em>— optional, leave empty to skip</em></div>
-        <div class="inf">Only if you want to run the SP in this package. SP name is <strong>auto-detected</strong>. Import from Excel/Notepad or add rows manually. Leave a row blank for no-parameter EXEC.</div>
-
-        <div style="margin-bottom:16px">
-          <label>SP Name <span style="color:var(--text3);font-weight:400">(auto-detected — edit if needed)</span></label>
-          <input type="text" id="spn" placeholder="e.g. usp_Delete_Unposted_JE_Batch_By_CTRL" style="max-width:500px">
-        </div>
-
-        <div class="bulk-box">
-          <div class="bulk-head">&#128203;&nbsp; Bulk Import <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">— paste from Notepad or Excel</span></div>
-          <div class="bulk-body">
-            <div class="inf" style="margin-bottom:10px">
-              <strong>Notepad:</strong> one value per line &nbsp;<code>1234</code><br>
-              <strong>Excel single column:</strong> copy &amp; paste — one row per EXEC<br>
-              <strong>Excel multi-column:</strong> tab-separated values get joined as <code>'val1', 'val2'</code> automatically
-            </div>
-            <textarea id="bulk" rows="4" placeholder="Paste from Notepad or Excel...&#10;&#10;1234&#10;5678&#10;9012"></textarea>
-            <div class="brow">
-              <button class="btn dk" onclick="importBulk()">&#8681;&nbsp; Import</button>
-              <button class="btn" onclick="g('bulk').value='';g('bst').innerHTML=''">&#8635;&nbsp; Clear</button>
-            </div>
-            <div class="st" id="bst"></div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="brand-icon">&#128230;</div>
+          <div>
+            <div class="brand-name">SQL Packager</div>
+            <div class="brand-sub">Data fix generator</div>
           </div>
         </div>
+      </div>
 
-        <div class="div"></div>
-        <div class="sec">Manual Rows <em>— or add one by one</em></div>
-        <table class="qt">
-          <thead><tr>
-            <th style="width:32px">#</th>
-            <th>Parameter Values <em style="font-size:10px;font-weight:400;color:var(--text3)"> — e.g. '1234' &nbsp;or&nbsp; '1234', 2 &nbsp;— blank = no-param</em></th>
-            <th style="width:34px"></th>
-          </tr></thead>
-          <tbody id="eb"></tbody>
-        </table>
-        <div class="brow" style="margin-top:12px">
-          <button class="btn" onclick="addE()">+ Add EXEC Row</button>
-          <button class="btn rd" onclick="clrExec()">&#8635;&nbsp; Clear All</button>
+      <nav class="nav">
+        <div class="nav-label">Package Type</div>
+
+        <button class="nav-item on" id="n-update" onclick="sw('update')">
+          <span class="ni">&#9998;</span> Update
+        </button>
+        <button class="nav-item del" id="n-delete" onclick="sw('delete')">
+          <span class="ni">&#128465;</span> Delete
+        </button>
+        <button class="nav-item sp" id="n-sp" onclick="sw('sp')">
+          <span class="ni">&#9881;</span> SP / Hook
+        </button>
+        <button class="nav-item mx" id="n-mixed" onclick="sw('mixed')">
+          <span class="ni">&#9889;</span> Mixed
+        </button>
+      </nav>
+
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- Page header -->
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="pageTitle">Update Package</div>
+          <div class="page-sub">Fill client details, paste your queries, download .pkg</div>
         </div>
       </div>
-    </div>
 
-    <!-- MIXED -->
-    <div class="pnl" id="p-mixed">
+      <!-- CLIENT DETAILS -->
       <div class="card">
-        <div class="sec">Mixed Queries <em>— UPDATE and DELETE in any order</em></div>
-        <div class="inf">Paste any combination of <strong>UPDATE</strong> and <strong>DELETE</strong> statements. Auto-detected, order preserved, one <strong>//SQL</strong> block generated.</div>
-        <textarea id="mq" rows="10" placeholder="UPDATE Property SET SADDR1 = 'test' WHERE SCODE = '100223'&#10;DELETE FROM INTEXCHANGERATE WHERE dtdate = '04/03/2026'&#10;UPDATE Property SET SADDR2 = 'x' WHERE SCODE = '100224'"></textarea>
-        <div class="brow">
-          <button class="btn dk" style="background:var(--blue);border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,.25)" onclick="parseM()">&#9654;&nbsp; Parse Queries</button>
-          <button class="btn" onclick="clr('mixed')">&#8635;&nbsp; Clear</button>
-        </div>
-        <div class="st" id="mst"></div>
-      </div>
-      <div class="card hide" id="mcard">
-        <div class="sec">Parsed Rows</div>
-        <div id="mb"></div>
-        <div class="brow" style="margin-top:4px">
-          <button class="btn" style="color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)" onclick="addM('update')">+ Update Row</button>
-          <button class="btn" style="color:var(--red);border-color:var(--red-border);background:var(--red-bg)" onclick="addM('delete')">+ Delete Row</button>
+        <div class="sec">Client Details</div>
+        <div class="g2">
+          <div><label>Client Pin</label><input type="text" id="pin" placeholder="100030769" oninput="regen()"></div>
+          <div><label>Client Name</label><input type="text" id="cname" placeholder="Affinius Capital LLC"
+              oninput="regen()"></div>
+          <div><label>Case #</label><input type="text" id="caseid" placeholder="17932288" oninput="regen()"></div>
+          <div><label>Date</label><input type="text" id="dt" placeholder="DD/MM/YYYY" oninput="regen()"></div>
+          <div><label>Created By</label><input type="text" id="createdby" placeholder="e.g. John Smith"
+              oninput="regen()"></div>
+          <div><label>Script Name</label><input type="text" id="scriptname" placeholder="e.g. Fix_Property_SADDR1"
+              oninput="regen()"></div>
         </div>
       </div>
-    </div>
 
-    <!-- OUTPUT -->
-    <div class="out-card hide" id="out">
-      <div class="out-bar">
-        <div class="out-bar-left">
-          <div class="out-dots"><span></span><span></span><span></span></div>
-          <span class="out-fn" id="outfn">package.pkg</span>
+      <!-- UPDATE -->
+      <div class="pnl on" id="p-update">
+        <div class="card">
+          <div class="sec">UPDATE Queries</div>
+          <div class="inf">Paste one or more UPDATE statements. Each gets its own <strong>INSERT into DatafixHistory +
+              UPDATE + GO</strong> block.</div>
+          <textarea id="uq" rows="6"
+            placeholder="UPDATE Property SET SADDR1 = LTRIM(RTRIM(REPLACE(SADDR1, CHAR(9), ''))) WHERE SCODE = '100223'"></textarea>
+          <div class="brow">
+            <button class="btn dk" onclick="parseU()">&#9654;&nbsp; Parse Queries</button>
+            <button class="btn" onclick="clr('update')">&#8635;&nbsp; Clear</button>
+          </div>
+          <div class="st" id="ust"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="cpd" id="cpd">&#10003;&nbsp; Copied!</span>
-          <button class="btn" onclick="doCopy()" style="padding:6px 14px;font-size:12px">&#128203;&nbsp; Copy</button>
-          <button class="btn gn" onclick="doDl()" style="padding:6px 14px;font-size:12px">&#8595;&nbsp; Download .pkg</button>
+        <div class="card hide" id="ucard">
+          <div class="sec">Parsed Rows <em>— each row = one INSERT + UPDATE + GO block</em></div>
+          <table class="qt">
+            <thead>
+              <tr>
+                <th style="width:32px">#</th>
+                <th style="width:110px">Table</th>
+                <th style="width:110px">Column</th>
+                <th>New Value</th>
+                <th>WHERE</th>
+                <th>FROM / JOIN</th>
+                <th style="width:34px"></th>
+              </tr>
+            </thead>
+            <tbody id="ub"></tbody>
+          </table>
+          <div class="brow" style="margin-top:12px"><button class="btn" onclick="addU()">+ Add Row</button></div>
         </div>
       </div>
-      <pre class="out-pre" id="pre"></pre>
-    </div>
 
-  </main>
-</div>
+      <!-- DELETE -->
+      <div class="pnl" id="p-delete">
+        <div class="card">
+          <div class="sec">DELETE Queries</div>
+          <div class="inf">Paste one or more DELETE statements. Each gets a <strong>SELECT * INTO bk_TABLE</strong>
+            backup + delete. Duplicate tables auto-get <strong>_1, _2</strong> suffixes.</div>
+          <textarea id="dq" rows="6" placeholder="DELETE FROM INTEXCHANGERATE WHERE dtdate = '04/03/2026'"></textarea>
+          <div class="brow">
+            <button class="btn dk"
+              style="background:var(--red);border-color:var(--red);box-shadow:0 2px 8px rgba(220,38,38,.25)"
+              onclick="parseD()">&#9654;&nbsp; Parse Queries</button>
+            <button class="btn" onclick="clr('delete')">&#8635;&nbsp; Clear</button>
+          </div>
+          <div class="st" id="dst"></div>
+        </div>
+        <div class="card hide" id="dcard">
+          <div class="sec">Parsed Rows <em>— edit backup table name if needed</em></div>
+          <table class="qt">
+            <thead>
+              <tr>
+                <th style="width:32px">#</th>
+                <th style="width:150px">Table</th>
+                <th style="width:175px">Backup Table</th>
+                <th>WHERE</th>
+                <th>FROM / JOIN</th>
+                <th style="width:34px"></th>
+              </tr>
+            </thead>
+            <tbody id="db"></tbody>
+          </table>
+          <div class="brow" style="margin-top:12px"><button class="btn" onclick="addD()">+ Add Row</button></div>
+        </div>
+      </div>
 
-<!-- INSTALL MODAL -->
-<div class="modal-bg" id="installModal">
-  <div class="modal">
-    <button onclick="g('installModal').classList.remove('on')" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">&#215;</button>
-    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px">&#128230; Install App</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:1.4rem">Opens like a desktop app. Works fully offline after install.</div>
-    <div id="pwaBtn" style="display:none;margin-bottom:14px">
-      <button onclick="doPwa()" style="width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">&#8659;&nbsp; Install Now</button>
-    </div>
-    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">Manual Steps</div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:2">
-      <strong style="color:var(--text)">Chrome / Edge:</strong><br>
-      1. Look for install icon &#10549; in the address bar → click it<br>
-      2. Click <strong style="color:var(--text)">Install</strong><br>
-      <div style="height:6px"></div>
-      <strong style="color:var(--text)">If no icon visible:</strong><br>
-      1. Click <strong style="color:var(--text)">&#8942; menu</strong> → Save and share<br>
-      2. Click <strong style="color:var(--text)">"Install page as app"</strong>
+      <!-- SP -->
+      <div class="pnl" id="p-sp">
+        <div class="card">
+          <div class="sec">SP / Hook Code</div>
+          <div class="inf">Paste your full stored procedure or hook code. Wrapped in package format as-is — no
+            modifications.</div>
+          <textarea id="spc" rows="14"
+            placeholder="CREATE OR ALTER PROCEDURE sp_YourProcedure&#10;    @Param DATETIME&#10;AS&#10;BEGIN&#10;    -- your code here&#10;END"
+            oninput="onSp()"></textarea>
+        </div>
+        <div class="card">
+          <div class="sec">EXEC Statements <em>— optional, leave empty to skip</em></div>
+          <div class="inf">Only if you want to run the SP in this package. SP name is <strong>auto-detected</strong>.
+            Import from Excel/Notepad or add rows manually. Leave a row blank for no-parameter EXEC.</div>
+
+          <div style="margin-bottom:16px">
+            <label>SP Name <span style="color:var(--text3);font-weight:400">(auto-detected — edit if
+                needed)</span></label>
+            <input type="text" id="spn" placeholder="e.g. usp_Delete_Unposted_JE_Batch_By_CTRL" style="max-width:500px">
+          </div>
+
+          <div class="bulk-box">
+            <div class="bulk-head">&#128203;&nbsp; Bulk Import <span
+                style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">— paste
+                from Notepad or Excel</span></div>
+            <div class="bulk-body">
+              <div class="inf" style="margin-bottom:10px">
+                <strong>Notepad:</strong> one value per line &nbsp;<code>1234</code><br>
+                <strong>Excel single column:</strong> copy &amp; paste — one row per EXEC<br>
+                <strong>Excel multi-column:</strong> tab-separated values get joined as <code>'val1', 'val2'</code>
+                automatically
+              </div>
+              <textarea id="bulk" rows="4"
+                placeholder="Paste from Notepad or Excel...&#10;&#10;1234&#10;5678&#10;9012"></textarea>
+              <div class="brow">
+                <button class="btn dk" onclick="importBulk()">&#8681;&nbsp; Import</button>
+                <button class="btn" onclick="g('bulk').value='';g('bst').innerHTML=''">&#8635;&nbsp; Clear</button>
+              </div>
+              <div class="st" id="bst"></div>
+            </div>
+          </div>
+
+          <div class="div"></div>
+          <div class="sec">Manual Rows <em>— or add one by one</em></div>
+          <table class="qt">
+            <thead>
+              <tr>
+                <th style="width:32px">#</th>
+                <th>Parameter Values <em style="font-size:10px;font-weight:400;color:var(--text3)"> — e.g. '1234'
+                    &nbsp;or&nbsp; '1234', 2 &nbsp;— blank = no-param</em></th>
+                <th style="width:34px"></th>
+              </tr>
+            </thead>
+            <tbody id="eb"></tbody>
+          </table>
+          <div class="brow" style="margin-top:12px">
+            <button class="btn" onclick="addE()">+ Add EXEC Row</button>
+            <button class="btn rd" onclick="clrExec()">&#8635;&nbsp; Clear All</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MIXED -->
+      <div class="pnl" id="p-mixed">
+        <div class="card">
+          <div class="sec">Mixed Queries <em>— UPDATE and DELETE in any order</em></div>
+          <div class="inf">Paste any combination of <strong>UPDATE</strong> and <strong>DELETE</strong> statements.
+            Auto-detected, order preserved, one <strong>//SQL</strong> block generated.</div>
+          <textarea id="mq" rows="10"
+            placeholder="UPDATE Property SET SADDR1 = 'test' WHERE SCODE = '100223'&#10;DELETE FROM INTEXCHANGERATE WHERE dtdate = '04/03/2026'&#10;UPDATE Property SET SADDR2 = 'x' WHERE SCODE = '100224'"></textarea>
+          <div class="brow">
+            <button class="btn dk"
+              style="background:var(--blue);border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,.25)"
+              onclick="parseM()">&#9654;&nbsp; Parse Queries</button>
+            <button class="btn" onclick="clr('mixed')">&#8635;&nbsp; Clear</button>
+          </div>
+          <div class="st" id="mst"></div>
+        </div>
+        <div class="card hide" id="mcard">
+          <div class="sec">Parsed Rows</div>
+          <div id="mb"></div>
+          <div class="brow" style="margin-top:4px">
+            <button class="btn" style="color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)"
+              onclick="addM('update')">+ Update Row</button>
+            <button class="btn" style="color:var(--red);border-color:var(--red-border);background:var(--red-bg)"
+              onclick="addM('delete')">+ Delete Row</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="out-card hide" id="out">
+        <div class="out-bar">
+          <div class="out-bar-left">
+            <div class="out-dots"><span></span><span></span><span></span></div>
+            <span class="out-fn" id="outfn">package.pkg</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="cpd" id="cpd">&#10003;&nbsp; Copied!</span>
+            <button class="btn" onclick="doCopy()" style="padding:6px 14px;font-size:12px">&#128203;&nbsp; Copy</button>
+            <button class="btn gn" onclick="doDl()" style="padding:6px 14px;font-size:12px">&#8595;&nbsp; Download
+              .pkg</button>
+          </div>
+        </div>
+        <pre class="out-pre" id="pre"></pre>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- INSTALL MODAL -->
+  <div class="modal-bg" id="installModal">
+    <div class="modal">
+      <button onclick="g('installModal').classList.remove('on')"
+        style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">&#215;</button>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px">&#128230;
+        Install App</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:1.4rem">Opens like a desktop app. Works fully offline
+        after install.</div>
+      <div id="pwaBtn" style="display:none;margin-bottom:14px">
+        <button onclick="doPwa()"
+          style="width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">&#8659;&nbsp;
+          Install Now</button>
+      </div>
+      <div
+        style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">
+        Manual Steps</div>
+      <div
+        style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:2">
+        <strong style="color:var(--text)">Chrome / Edge:</strong><br>
+        1. Look for install icon &#10549; in the address bar → click it<br>
+        2. Click <strong style="color:var(--text)">Install</strong><br>
+        <div style="height:6px"></div>
+        <strong style="color:var(--text)">If no icon visible:</strong><br>
+        1. Click <strong style="color:var(--text)">&#8942; menu</strong> → Save and share<br>
+        2. Click <strong style="color:var(--text)">"Install page as app"</strong>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-var mode='update',uR=[],dR=[],eP=[],mR=[];
-var titles={update:'Update Package',delete:'Delete Package',sp:'SP / Hook Package',mixed:'Mixed Package'};
+  <script>
+    var mode = 'update', uR = [], dR = [], eP = [], mR = [];
+    var titles = { update: 'Update Package', delete: 'Delete Package', sp: 'SP / Hook Package', mixed: 'Mixed Package' };
 
-(function(){
-  var d=new Date();
-  g('dt').value=p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear();
-  reE();reM();
-})();
+    (function () {
+      var d = new Date();
+      g('dt').value = p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear();
+      reE(); reM();
+    })();
 
-g('spn').addEventListener('input',function(){this.dataset.m='1';genSP();});
+    g('spn').addEventListener('input', function () { this.dataset.m = '1'; genSP(); });
 
-function p2(n){return String(n).padStart(2,'0');}
+    function p2(n) { return String(n).padStart(2, '0'); }
 
-// Generate timestamp suffix for backup tables e.g. _20260320_143022
-function bkSuffix(){
-  var d=new Date();
-  return '_'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'_'+p2(d.getHours())+p2(d.getMinutes())+p2(d.getSeconds());
-}
+    // Generate timestamp suffix for backup tables e.g. _20260320_143022
+    function bkSuffix() {
+      var d = new Date();
+      return '_' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+    }
 
-// wrapVal — decides whether to wrap in quotes or not
-function wrapVal(val){
-  val = val.trim();
-  // Already a wrapped subquery e.g. (select ...)
-  if(val.charAt(0)==='(') return val;
-  // Bare SELECT subquery without parens — auto-wrap in ()
-  if(/^SELECT\s/i.test(val)) return '('+val+')';
-  // Already single-quoted — keep as-is
-  if(val.length>=2 && val.charAt(0)=="'" && val.charAt(val.length-1)=="'") return val;
-  // Double-quoted — convert to single
-  if(val.length>=2 && val.charAt(0)==='"' && val.charAt(val.length-1)==='"') return "'"+val.slice(1,-1)+"'";
-  // Column reference: alias.column or table.column e.g. tr.hmy, ft.dtstart
-  if(/^\w+\.\w+$/.test(val)) return val;
-  // Plain column name (no dots, no spaces) — could be a column ref, no quotes
-  if(/^\w+$/.test(val) && !/^\d+$/.test(val)) return val;
-  // SQL expression with operators, functions etc — no quotes
-  if(/[+\-*\/\(\)]/.test(val)) return val;
-  // Plain string literal — wrap in single quotes
-  return "'"+val+"'";
-}
+    // wrapVal — decides whether to wrap in quotes or not
+    function wrapVal(val) {
+      val = val.trim();
+      // Already a wrapped subquery e.g. (select ...)
+      if (val.charAt(0) === '(') return val;
+      // Bare SELECT subquery without parens — auto-wrap in ()
+      if (/^SELECT\s/i.test(val)) return '(' + val + ')';
+      // Already single-quoted — keep as-is
+      if (val.length >= 2 && val.charAt(0) == "'" && val.charAt(val.length - 1) == "'") return val;
+      // Double-quoted — convert to single
+      if (val.length >= 2 && val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') return "'" + val.slice(1, -1) + "'";
+      // Column reference: alias.column or table.column e.g. tr.hmy, ft.dtstart
+      if (/^\w+\.\w+$/.test(val)) return val;
+      // Plain column name (no dots, no spaces) — could be a column ref, no quotes
+      if (/^\w+$/.test(val) && !/^\d+$/.test(val)) return val;
+      // SQL expression with operators, functions etc — no quotes
+      if (/[+\-*\/\(\)]/.test(val)) return val;
+      // Plain string literal — wrap in single quotes
+      return "'" + val + "'";
+    }
 
-// Smart SQL value wrapper:
-// - If value is a subquery (starts with '(') — no quotes
-// - If value already has surrounding quotes — strip and rewrap once
-// - Otherwise — wrap in single quotes
-function sqlVal(val){
-  val = val.trim();
-  // Subquery — no quotes at all
-  if(val.charAt(0)==='(') return val;
-  // Already quoted with single quotes — strip and return clean
-  if(val.length>=2 && val.charAt(0)=="'" && val.charAt(val.length-1)=="'"){
-    return val.slice(1,-1);
-  }
-  // Already quoted with double quotes — strip
-  if(val.length>=2 && val.charAt(0)==='"' && val.charAt(val.length-1)==='"'){
-    return val.slice(1,-1);
-  }
-  return val;
-}
-function g(id){return document.getElementById(id);}
-function v(id){return g(id).value.trim();}
-function e(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');}
-function show(t){
-  g('pre').textContent=t;g('out').classList.remove('hide');
-  g('outfn').textContent='case_'+(v('caseid')||'package')+'_'+mode+'.pkg';
-}
-function hide(){g('out').classList.add('hide');}
-function notes(){
-  var createdby  = v('createdby');
-  var scriptname = v('scriptname');
-  var n = '//Notes\n\nClient Pin: '+v('pin')+' \nClient Name: '+v('cname')+'\n\nDate: '+v('dt')+'\nCase#: '+v('caseid');
-  if(createdby)  n += '\nCreated By: '+createdby;
-  if(scriptname) n += '\nScript Name: '+scriptname;
-  n += '\n\n//End Notes';
-  return n;
-}
+    // Smart SQL value wrapper:
+    // - If value is a subquery (starts with '(') — no quotes
+    // - If value already has surrounding quotes — strip and rewrap once
+    // - Otherwise — wrap in single quotes
+    function sqlVal(val) {
+      val = val.trim();
+      // Subquery — no quotes at all
+      if (val.charAt(0) === '(') return val;
+      // Already quoted with single quotes — strip and return clean
+      if (val.length >= 2 && val.charAt(0) == "'" && val.charAt(val.length - 1) == "'") {
+        return val.slice(1, -1);
+      }
+      // Already quoted with double quotes — strip
+      if (val.length >= 2 && val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
+        return val.slice(1, -1);
+      }
+      return val;
+    }
+    function g(id) { return document.getElementById(id); }
+    function v(id) { return g(id).value.trim(); }
+    function e(s) { return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;'); }
+    function show(t) {
+      g('pre').textContent = t; g('out').classList.remove('hide');
+      g('outfn').textContent = 'case_' + (v('caseid') || 'package') + '_' + mode + '.pkg';
+    }
+    function hide() { g('out').classList.add('hide'); }
+    function notes() {
+      var createdby = v('createdby');
+      var scriptname = v('scriptname');
+      var n = '//Notes\n\nClient Pin: ' + v('pin') + ' \nClient Name: ' + v('cname') + '\n\nDate: ' + v('dt') + '\nCase#: ' + v('caseid');
+      if (createdby) n += '\nCreated By: ' + createdby;
+      if (scriptname) n += '\nScript Name: ' + scriptname;
+      n += '\n\n//End Notes';
+      return n;
+    }
 
-// Normalize bare SELECT values in a SET clause:
-// "col = select x from t where y=1" -> "col = (select x from t where y=1)"
-// Strategy: after each '=' at depth 0, if the next non-space token is SELECT,
-// find the boundary of that bare select (next top-level comma, FROM, or end)
-// and wrap it in parens. We determine the boundary by finding the last
-// contiguous keyword chain (SELECT...FROM...WHERE...GROUP...ORDER...HAVING).
-function normalizeBareSelects(stmt){
-  var upper=stmt.toUpperCase();
-  var setIdx=upper.indexOf(' SET ');
-  if(setIdx<0) setIdx=upper.indexOf('\nSET');
-  if(setIdx<0) return stmt;
-  // Work only on the part after SET
-  var prefix=stmt.slice(0,setIdx+5);
-  var rest=stmt.slice(setIdx+5);
-  // Replace: = (whitespace)? SELECT ... (up to top-level FROM that is NOT part of bare select)
-  // We do this iteratively for each assignment
-  // Simple approach: find "= SELECT" pattern at depth 0 and wrap until the outer FROM/end
-  var result='', i=0, depth=0;
-  while(i<rest.length){
-    var ch=rest[i];
-    if(ch==='('){depth++;result+=ch;i++;continue;}
-    if(ch===')'){depth--;result+=ch;i++;continue;}
-    if(depth===0){
-      var up=rest.slice(i).toUpperCase();
-      // Match "= SELECT" — wrap the bare subquery
-      if(/^=\s*SELECT\s/i.test(up)){
-        // find the = sign
-        result+='=';i++;
-        // skip whitespace
-        while(i<rest.length && /\s/.test(rest[i])){result+=' ';i++;}
-        // now collect the bare SELECT until:
-        // a top-level comma (another SET assignment) OR end of the SET block
-        // We collect greedily including nested FROM/WHERE but stopping at
-        // a comma at depth 0 OR a FROM/WHERE that comes AFTER we've already
-        // seen at least one FROM (meaning it's the outer query's FROM)
-        var subStart=i, subDepth=0, fromCount=0;
-        var subEnd=rest.length;
-        var j=i;
-        while(j<rest.length){
-          var c=rest[j];
-          if(c==='('){subDepth++;j++;continue;}
-          if(c===')'){subDepth--;j++;continue;}
-          if(subDepth===0){
-            var u=rest.slice(j).toUpperCase();
-            if(c===',' ){subEnd=j;break;}
-            // Count top-level FROM keywords inside the bare select
-            if(/^FROM[\s\r\n]/.test(u)){fromCount++;j++;continue;}
-            // Second top-level FROM = outer query's FROM — stop before it
-            // Actually: the FIRST FROM after SELECT is part of the subquery (FROM table),
-            // any subsequent top-level FROM is the outer UPDATE's FROM clause.
-            // But there's only one "from property" in subquery and one outer FROM.
-            // So stop at the 2nd top-level FROM.
-            // Wait — we already incremented fromCount before checking, so:
-            // if fromCount>=1 and we see another FROM, that's the outer one.
+    // Normalize bare SELECT values in a SET clause:
+    // "col = select x from t where y=1" -> "col = (select x from t where y=1)"
+    // Strategy: after each '=' at depth 0, if the next non-space token is SELECT,
+    // find the boundary of that bare select (next top-level comma, FROM, or end)
+    // and wrap it in parens. We determine the boundary by finding the last
+    // contiguous keyword chain (SELECT...FROM...WHERE...GROUP...ORDER...HAVING).
+    function normalizeBareSelects(stmt) {
+      var upper = stmt.toUpperCase();
+      var setIdx = upper.indexOf(' SET ');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET');
+      if (setIdx < 0) return stmt;
+      // Work only on the part after SET
+      var prefix = stmt.slice(0, setIdx + 5);
+      var rest = stmt.slice(setIdx + 5);
+      // Replace: = (whitespace)? SELECT ... (up to top-level FROM that is NOT part of bare select)
+      // We do this iteratively for each assignment
+      // Simple approach: find "= SELECT" pattern at depth 0 and wrap until the outer FROM/end
+      var result = '', i = 0, depth = 0;
+      while (i < rest.length) {
+        var ch = rest[i];
+        if (ch === '(') { depth++; result += ch; i++; continue; }
+        if (ch === ')') { depth--; result += ch; i++; continue; }
+        if (depth === 0) {
+          var up = rest.slice(i).toUpperCase();
+          // Match "= SELECT" — wrap the bare subquery
+          if (/^=\s*SELECT\s/i.test(up)) {
+            // find the = sign
+            result += '='; i++;
+            // skip whitespace
+            while (i < rest.length && /\s/.test(rest[i])) { result += ' '; i++; }
+            // now collect the bare SELECT until:
+            // a top-level comma (another SET assignment) OR end of the SET block
+            // We collect greedily including nested FROM/WHERE but stopping at
+            // a comma at depth 0 OR a FROM/WHERE that comes AFTER we've already
+            // seen at least one FROM (meaning it's the outer query's FROM)
+            var subStart = i, subDepth = 0, fromCount = 0;
+            var subEnd = rest.length;
+            var j = i;
+            while (j < rest.length) {
+              var c = rest[j];
+              if (c === '(') { subDepth++; j++; continue; }
+              if (c === ')') { subDepth--; j++; continue; }
+              if (subDepth === 0) {
+                var u = rest.slice(j).toUpperCase();
+                if (c === ',') { subEnd = j; break; }
+                // Count top-level FROM keywords inside the bare select
+                if (/^FROM[\s\r\n]/.test(u)) { fromCount++; j++; continue; }
+                // Second top-level FROM = outer query's FROM — stop before it
+                // Actually: the FIRST FROM after SELECT is part of the subquery (FROM table),
+                // any subsequent top-level FROM is the outer UPDATE's FROM clause.
+                // But there's only one "from property" in subquery and one outer FROM.
+                // So stop at the 2nd top-level FROM.
+                // Wait — we already incremented fromCount before checking, so:
+                // if fromCount>=1 and we see another FROM, that's the outer one.
+              }
+              j++;
+            }
+            // Re-do: proper two-FROM detection
+            subDepth = 0; fromCount = 0; subEnd = rest.length;
+            j = i;
+            while (j < rest.length) {
+              var c2 = rest[j];
+              if (c2 === '(') { subDepth++; j++; continue; }
+              if (c2 === ')') { subDepth--; j++; continue; }
+              if (subDepth === 0) {
+                var u2 = rest.slice(j).toUpperCase();
+                if (c2 === ',') { subEnd = j; break; }
+                if (/^FROM[\s\r\n]/.test(u2)) {
+                  fromCount++;
+                  if (fromCount >= 2) { subEnd = j; break; }
+                }
+              }
+              j++;
+            }
+            var sub = rest.slice(subStart, subEnd).trim();
+            result += '(' + sub + ')';
+            i = subEnd;
+            continue;
           }
-          j++;
         }
-        // Re-do: proper two-FROM detection
-        subDepth=0;fromCount=0;subEnd=rest.length;
-        j=i;
-        while(j<rest.length){
-          var c2=rest[j];
-          if(c2==='('){subDepth++;j++;continue;}
-          if(c2===')'){subDepth--;j++;continue;}
-          if(subDepth===0){
-            var u2=rest.slice(j).toUpperCase();
-            if(c2===','){subEnd=j;break;}
-            if(/^FROM[\s\r\n]/.test(u2)){
-              fromCount++;
-              if(fromCount>=2){subEnd=j;break;}
+        result += ch; i++;
+      }
+      return prefix + result;
+    }
+
+    function sSet(str) {
+      var parts = [], depth = 0, start = 0;
+      for (var i = 0; i < str.length; i++) {
+        if (str[i] === '(') depth++;
+        else if (str[i] === ')') depth--;
+        else if (str[i] === ',' && depth === 0) { parts.push(str.slice(start, i).trim()); start = i + 1; }
+      }
+      parts.push(str.slice(start).trim());
+      return parts.filter(function (p) { return p.length > 0; });
+    }
+
+    function extractSet(stmt) {
+      var upper = stmt.toUpperCase();
+      var setIdx = upper.indexOf(' SET ');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET');
+      if (setIdx < 0) return null;
+      // Use setEndIdx to find where assignments end (bare-SELECT-aware)
+      var endIdx = setEndIdx(stmt);
+      return stmt.slice(setIdx + 5, endIdx).trim();
+    }
+
+    function extractWhere(stmt) {
+      // Start scanning after the SET assignments end (past any FROM clause too)
+      var scanStart = 0;
+      var upper = stmt.toUpperCase();
+      var hasSet = upper.indexOf(' SET ') >= 0 || upper.indexOf('\nSET') >= 0;
+      if (hasSet) {
+        // Skip past SET values first (respecting depth), then past FROM clause
+        var endSet = setEndIdx(stmt);
+        if (endSet > 0) {
+          // If there's a FROM clause, skip past it entirely to find the real WHERE
+          var depth = 0, i = endSet;
+          var foundFrom = false;
+          for (; i < stmt.length; i++) {
+            if (stmt[i] === '(') depth++;
+            else if (stmt[i] === ')') depth--;
+            else if (depth === 0) {
+              var up = stmt.slice(i).toUpperCase();
+              if (/^FROM[\s\r\n]/.test(up)) { foundFrom = true; }
+              if (foundFrom && /^WHERE[\s\r\n\t]/.test(up)) { return stmt.slice(i + 6).trim(); }
+              if (!foundFrom && /^WHERE[\s\r\n\t]/.test(up)) { return stmt.slice(i + 6).trim(); }
             }
           }
-          j++;
-        }
-        var sub=rest.slice(subStart,subEnd).trim();
-        result+='('+sub+')';
-        i=subEnd;
-        continue;
-      }
-    }
-    result+=ch;i++;
-  }
-  return prefix+result;
-}
-
-function sSet(str){
-  var parts=[],depth=0,start=0;
-  for(var i=0;i<str.length;i++){
-    if(str[i]==='(')depth++;
-    else if(str[i]===')')depth--;
-    else if(str[i]===',' && depth===0){parts.push(str.slice(start,i).trim());start=i+1;}
-  }
-  parts.push(str.slice(start).trim());
-  return parts.filter(function(p){return p.length>0;});
-}
-
-function extractSet(stmt){
-  var upper=stmt.toUpperCase();
-  var setIdx=upper.indexOf(' SET ');
-  if (setIdx < 0) setIdx = upper.indexOf('\nSET');
-  if(setIdx<0)return null;
-  // Use setEndIdx to find where assignments end (bare-SELECT-aware)
-  var endIdx=setEndIdx(stmt);
-  return stmt.slice(setIdx+5, endIdx).trim();
-}
-
-function extractWhere(stmt){
-  // Start scanning after the SET assignments end (past any FROM clause too)
-  var scanStart=0;
-  var upper=stmt.toUpperCase();
-  var hasSet=upper.indexOf(' SET ')>=0||upper.indexOf('\nSET')>=0;
-  if(hasSet){
-    // Skip past SET values first (respecting depth), then past FROM clause
-    var endSet=setEndIdx(stmt);
-    if(endSet>0){
-      // If there's a FROM clause, skip past it entirely to find the real WHERE
-      var depth=0,i=endSet;
-      var foundFrom=false;
-      for(;i<stmt.length;i++){
-        if(stmt[i]==='(') depth++;
-        else if(stmt[i]===')') depth--;
-        else if(depth===0){
-          var up=stmt.slice(i).toUpperCase();
-          if(/^FROM[\s\r\n]/.test(up)){foundFrom=true;}
-          if(foundFrom&&/^WHERE[\s\r\n\t]/.test(up)){return stmt.slice(i+6).trim();}
-          if(!foundFrom&&/^WHERE[\s\r\n\t]/.test(up)){return stmt.slice(i+6).trim();}
+          return '';
         }
       }
-      return '';
+      // Fallback: top-level WHERE scan from start (for DELETE etc.)
+      var depth = 0, lastWhere = -1;
+      for (var i = scanStart; i < stmt.length; i++) {
+        if (stmt[i] === '(') depth++;
+        else if (stmt[i] === ')') depth--;
+        else if (depth === 0) {
+          var up = stmt.slice(i).toUpperCase();
+          if (/^WHERE[\s\r\n\t]/.test(up)) lastWhere = i;
+        }
+      }
+      if (lastWhere < 0) return '';
+      return stmt.slice(lastWhere + 6).trim();
     }
-  }
-  // Fallback: top-level WHERE scan from start (for DELETE etc.)
-  var depth=0,lastWhere=-1;
-  for(var i=scanStart;i<stmt.length;i++){
-    if(stmt[i]==='(')depth++;
-    else if(stmt[i]===')')depth--;
-    else if(depth===0){
-      var up=stmt.slice(i).toUpperCase();
-      if(/^WHERE[\s\r\n\t]/.test(up))lastWhere=i;
+
+    // Find the index where the SET assignments end (top-level FROM or WHERE, respecting parens).
+    // NOTE: call normalizeBareSelects(stmt) before this to wrap bare SELECT values in parens.
+    function setEndIdx(stmt) {
+      var upper = stmt.toUpperCase();
+      var setIdx = upper.indexOf(' SET ');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET');
+      if (setIdx < 0) return -1;
+      var i = setIdx + 5, depth = 0;
+      while (i < stmt.length) {
+        var ch = stmt[i];
+        if (ch === '(') { depth++; i++; continue; }
+        if (ch === ')') { depth--; i++; continue; }
+        if (depth === 0) {
+          var up = stmt.slice(i).toUpperCase();
+          if (/^FROM[\s\r\n]/.test(up) || /^WHERE[\s\r\n\t]/.test(up)) return i;
+        }
+        i++;
+      }
+      return i;
     }
-  }
-  if(lastWhere<0)return '';
-  return stmt.slice(lastWhere+6).trim();
-}
 
-// Find the index where the SET assignments end (top-level FROM or WHERE, respecting parens).
-// NOTE: call normalizeBareSelects(stmt) before this to wrap bare SELECT values in parens.
-function setEndIdx(stmt){
-  var upper=stmt.toUpperCase();
-  var setIdx=upper.indexOf(' SET ');
-  if(setIdx<0) setIdx=upper.indexOf('\nSET');
-  if(setIdx<0) return -1;
-  var i=setIdx+5, depth=0;
-  while(i<stmt.length){
-    var ch=stmt[i];
-    if(ch==='('){depth++;i++;continue;}
-    if(ch===')'){depth--;i++;continue;}
-    if(depth===0){
-      var up=stmt.slice(i).toUpperCase();
-      if(/^FROM[\s\r\n]/.test(up)||/^WHERE[\s\r\n\t]/.test(up)) return i;
+    function extractFrom(stmt) {
+      var endSet = setEndIdx(stmt);
+      if (endSet < 0) return '';
+      // From endSet onward, find top-level FROM keyword
+      var depth = 0, i = endSet, absFrom = -1;
+      for (; i < stmt.length; i++) {
+        if (stmt[i] === '(') depth++;
+        else if (stmt[i] === ')') depth--;
+        else if (depth === 0) {
+          var up = stmt.slice(i).toUpperCase();
+          if (/^FROM[\s\r\n]/.test(up)) { absFrom = i; break; }
+          // Stop if we hit WHERE before any FROM
+          if (/^WHERE[\s\r\n\t]/.test(up)) return '';
+        }
+      }
+      if (absFrom < 0) return '';
+      // Now read from absFrom to top-level WHERE or end
+      depth = 0; i = absFrom; var lastWhere = -1;
+      for (; i < stmt.length; i++) {
+        if (stmt[i] === '(') depth++;
+        else if (stmt[i] === ')') depth--;
+        else if (depth === 0) {
+          var up2 = stmt.slice(i).toUpperCase();
+          if (/^WHERE[\s\r\n\t]/.test(up2)) { lastWhere = i; break; }
+        }
+      }
+      var result = (lastWhere >= 0 ? stmt.slice(absFrom, lastWhere) : stmt.slice(absFrom)).trim();
+      // Strip leading FROM keyword so callers can prepend it themselves consistently
+      return result.replace(/^FROM\s+/i, '');
     }
-    i++;
-  }
-  return i;
-}
 
-function extractFrom(stmt){
-  var endSet=setEndIdx(stmt);
-  if(endSet<0) return '';
-  // From endSet onward, find top-level FROM keyword
-  var depth=0,i=endSet,absFrom=-1;
-  for(;i<stmt.length;i++){
-    if(stmt[i]==='(') depth++;
-    else if(stmt[i]===')') depth--;
-    else if(depth===0){
-      var up=stmt.slice(i).toUpperCase();
-      if(/^FROM[\s\r\n]/.test(up)){absFrom=i;break;}
-      // Stop if we hit WHERE before any FROM
-      if(/^WHERE[\s\r\n\t]/.test(up)) return '';
-    }
-  }
-  if(absFrom<0) return '';
-  // Now read from absFrom to top-level WHERE or end
-  depth=0;i=absFrom;var lastWhere=-1;
-  for(;i<stmt.length;i++){
-    if(stmt[i]==='(') depth++;
-    else if(stmt[i]===')') depth--;
-    else if(depth===0){
-      var up2=stmt.slice(i).toUpperCase();
-      if(/^WHERE[\s\r\n\t]/.test(up2)){lastWhere=i;break;}
-    }
-  }
-  var result=(lastWhere>=0?stmt.slice(absFrom,lastWhere):stmt.slice(absFrom)).trim();
-  // Strip leading FROM keyword so callers can prepend it themselves consistently
-  return result.replace(/^FROM\s+/i,'');
-}
-
-// Build alias->tableName map from a FROM clause like:
-// "FROM fund_tran ft inner join other_tbl ot on ..."
-// Returns the real table name for a given alias, or the alias itself if not found.
-function resolveAlias(alias, fromClause){
-  if(!fromClause) return alias;
-  var map={};
-  var sqlKw=/^(ON|SET|WHERE|AND|OR|NOT|IN|IS|NULL|AS|INNER|LEFT|RIGHT|OUTER|CROSS|JOIN|FROM|SELECT|UPDATE|DELETE)$/i;
-  // Split on JOIN/FROM keywords to get individual table references
-  var segments=fromClause.split(/\b(?:FROM|INNER\s+JOIN|LEFT\s+(?:OUTER\s+)?JOIN|RIGHT\s+(?:OUTER\s+)?JOIN|CROSS\s+JOIN|FULL\s+(?:OUTER\s+)?JOIN|JOIN)\b/gi);
-  segments.forEach(function(seg){
-    var part=seg.replace(/\bON\b[\s\S]*/i,'').trim();
-    var words=part.match(/\b\w+\b/g);
-    if(!words||words.length<1)return;
-    var tname=words[0];
-    if(words.length>=2&&!sqlKw.test(words[1])) map[words[1].toLowerCase()]=tname;
-    map[tname.toLowerCase()]=tname;
-  });
-  return map[alias.toLowerCase()]||alias;
-}
-
-var DFH="If Not Exists (Select Name From SysObjects Where Name = 'DataFixHistory')\n"+
-  "\tCreate Table DataFixHistory\n\t(\n"+
-  "\t\thMy NUMERIC(18,0) IDENTITY(1,1) Not Null,\n"+
-  "\t\thyCRM NUMERIC (18,0) Not Null,\n"+
-  "\t\tsTableName VARCHAR(400) Not Null,\n"+
-  "\t\tsColumnName VARCHAR(400) Not Null,\n"+
-  "\t\thForeignKey NUMERIC(18,0) Not Null,\n"+
-  "\t\tsNotes VarChar(2000) Not Null,\n"+
-  "\t\tsNewValue VARCHAR(100),\n"+
-  "\t\tsOldValue VARCHAR(100),\n"+
-  "\t\tdtDate DATETIME\n\t)\n"+
-  "Else If Not Exists (Select * From INFORMATION_SCHEMA.COLUMNS Where Table_Name = 'DataFixHistory' and Column_Name = 'sColumnName')\n"+
-  "\tAlter Table DataFixHistory Add sColumnName VARCHAR(400) Null\nGO";
-
-function sw(m){
-  mode=m;
-  ['update','delete','sp','mixed'].forEach(function(x){
-    g('p-'+x).classList.toggle('on',x===m);
-    g('n-'+x).classList.toggle('on',x===m);
-  });
-  g('pageTitle').textContent=titles[m];
-  hide();
-  if(m==='sp')genSP();
-  if(m==='mixed'&&mR.length)genM();
-}
-function regen(){
-  if(mode==='update'&&uR.length)genU();
-  if(mode==='delete'&&dR.length)genD();
-  if(mode==='sp')genSP();
-  if(mode==='mixed'&&mR.length)genM();
-}
-function clr(m){
-  if(m==='update'){g('uq').value='';g('ust').innerHTML='';g('ucard').classList.add('hide');uR=[];}
-  if(m==='delete'){g('dq').value='';g('dst').innerHTML='';g('dcard').classList.add('hide');dR=[];}
-  if(m==='sp'){g('spc').value='';g('spn').value='';g('spn').dataset.m='';eP=[];reE();}
-  if(m==='mixed'){g('mq').value='';g('mst').innerHTML='';g('mcard').classList.add('hide');mR=[];reM();}
-  hide();
-}
-
-// UPDATE
-function parseU(){
-  var raw=v('uq'),st=g('ust');
-  if(!raw){st.innerHTML='<span class="er">Error</span> Paste at least one UPDATE query.';return;}
-  var parts=raw.split(/(?=\bUPDATE\b)/i).map(function(s){return s.trim();}).filter(function(s){return /^UPDATE\s/i.test(s);});
-  if(!parts.length){st.innerHTML='<span class="er">Error</span> No UPDATE statements found.';return;}
-  uR=[];var fail=0;
-  parts.forEach(function(stmt){
-    stmt=stmt.replace(/;\s*$/,'').replace(/\bGO\b\s*$/i,'').trim();
-    stmt=normalizeBareSelects(stmt);
-    var tm=stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i);if(!tm){fail++;return;}
-    var tbl=tm[1];
-    var whr=extractWhere(stmt);
-    var frm=extractFrom(stmt);
-    var realTbl=resolveAlias(tbl,frm);
-    var setStr=extractSet(stmt);if(!setStr){fail++;return;}
-    sSet(setStr).forEach(function(pair){
-      var eq=pair.indexOf('=');if(eq<0)return;
-      var col=pair.substring(0,eq).trim().replace(/[\[\]]/g,''),val=pair.substring(eq+1).trim();
-      if(col)uR.push({table:tbl,col:col,val:val,where:whr,from:frm,realTable:realTbl});
-    });
-  });
-  if(!uR.length){st.innerHTML='<span class="er">Error</span> Could not parse SET columns.';return;}
-  st.innerHTML='<span class="ok">&#10003; Parsed</span> <strong>'+uR.length+'</strong> row(s).'+(fail?' <span class="er">'+fail+' failed</span>':'');
-  reU();g('ucard').classList.remove('hide');genU();
-}
-function reU(){
-  var tb=g('ub');tb.innerHTML='';
-  uR.forEach(function(r,i){
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td><span class="nm">'+(i+1)+'</span></td>'+
-      '<td><input type="text" value="'+e(r.realTable||r.table)+'" oninput="uR['+i+'].realTable=this.value;genU()"></td>'+
-      '<td><input type="text" value="'+e(r.col)+'" oninput="uR['+i+'].col=this.value;genU()"></td>'+
-      '<td><input type="text" value="'+e(r.val)+'" oninput="uR['+i+'].val=this.value;genU()"></td>'+
-      '<td><input type="text" value="'+e(r.where)+'" oninput="uR['+i+'].where=this.value;genU()"></td>'+
-      '<td><input type="text" value="'+e(r.from||'')+'" placeholder="(optional JOIN)" oninput="uR['+i+'].from=this.value;genU()"></td>'+
-      '<td><button class="xb" onclick="uR.splice('+i+',1);reU();genU()">&#215;</button></td>';
-    tb.appendChild(tr);
-  });
-}
-function addU(){
-  var l=uR.length?uR[uR.length-1]:{};
-  uR.push({table:l.table||'',col:l.col||'',val:l.val||'',where:'',from:''});
-  reU();g('ucard').classList.remove('hide');genU();
-}
-function genU(){
-  var cid=v('caseid'),blocks='';
-  uR.forEach(function(r){
-    if(!r.col||!r.table)return;
-    var w=r.where?'WHERE '+r.where:'';
-    var f=r.from?r.from.trim():'';
-    var newVal=wrapVal(r.val);
-    var stn=r.realTable||r.table;
-    blocks+="Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n"+
-      "(Select '"+cid+"', '"+stn+"', '"+r.col+"', hmy, 'Updating "+r.col+"',\n"+
-      newVal+", "+r.col+", getdate()\n"+
-      (f?"FROM "+f+(w?"\n"+w:""):"from "+r.table+(w?" "+w:""))+")\n\n"+
-      "UPDATE "+r.table+" SET "+r.col+" = "+r.val+(f?"\n"+f:"")+(w?" "+w:"")+"\nGO\n\n";
-  });
-  if(!blocks)return;
-  show(notes()+"\n\n//SQL\n\n"+DFH+"\n\n"+blocks.trimEnd()+"\n\n//End SQL");
-}
-
-// DELETE
-function parseD(){
-  var raw=v('dq'),st=g('dst');
-  if(!raw){st.innerHTML='<span class="er">Error</span> Paste at least one DELETE query.';return;}
-  var parts=raw.split(/(?=\bDELETE\b)/i).map(function(s){return s.trim();}).filter(function(s){return /^DELETE\b/i.test(s);});
-  if(!parts.length){st.innerHTML='<span class="er">Error</span> No DELETE statements found.';return;}
-  dR=[];var fail=0;
-  parts.forEach(function(stmt){
-    stmt=stmt.replace(/;\s*$/,'').replace(/\bGO\b\s*$/i,'').trim();
-    var tm=stmt.match(/^DELETE\s+FROM\s+\[?(\w+)\]?/i);if(!tm){fail++;return;}
-    var tbl=tm[1];
-    dR.push({table:tbl,backup:'bk_'+tbl+bkSuffix(),where:extractWhere(stmt)});
-  });
-  if(!dR.length){st.innerHTML='<span class="er">Error</span> Could not parse table names.';return;}
-  var seen={},ctr={};
-  dR.forEach(function(r){seen[r.backup]=(seen[r.backup]||0)+1;});
-  dR.forEach(function(r){if(seen[r.backup]>1){ctr[r.backup]=(ctr[r.backup]||0)+1;r.backup=r.backup+'_'+ctr[r.backup];}});
-  st.innerHTML='<span class="ok">&#10003; Parsed</span> <strong>'+dR.length+'</strong> DELETE(s).'+(fail?' <span class="er">'+fail+' failed</span>':'');
-  reD();g('dcard').classList.remove('hide');genD();
-}
-function reD(){
-  var tb=g('db');tb.innerHTML='';
-  dR.forEach(function(r,i){
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td><span class="nm">'+(i+1)+'</span></td>'+
-      '<td><input type="text" value="'+e(r.table)+'" oninput="dR['+i+'].table=this.value;genD()"></td>'+
-      '<td><input type="text" value="'+e(r.backup)+'" oninput="dR['+i+'].backup=this.value;genD()"></td>'+
-      '<td><input type="text" value="'+e(r.where)+'" oninput="dR['+i+'].where=this.value;genD()"></td>'+
-      '<td><button class="xb" onclick="dR.splice('+i+',1);reD();genD()">&#215;</button></td>';
-    tb.appendChild(tr);
-  });
-}
-function addD(){dR.push({table:'',backup:'bk_',where:''});reD();g('dcard').classList.remove('hide');genD();}
-function genD(){
-  var blocks='';
-  dR.forEach(function(r){
-    if(!r.table)return;
-    var w=r.where?'WHERE '+r.where:'';
-    blocks+="select * into "+r.backup+" from "+r.table+(w?" "+w:"")+"\ndelete from "+r.table+(w?" "+w:"")+"\n\n";
-  });
-  if(!blocks)return;
-  show(notes()+"\n\n//SQL\n\n"+blocks.trimEnd()+"\n\n//End SQL");
-}
-
-// SP
-function onSp(){
-  var code=g('spc').value,nf=g('spn');
-  if(!nf.dataset.m){
-    var m=code.match(/(?:CREATE|ALTER)\s+(?:OR\s+ALTER\s+)?(?:PROCEDURE|PROC)\s+(?:\[?\w+\]?\.)?\[?(\w+)\]?/i);
-    if(m)nf.value=m[1];
-  }
-  genSP();
-}
-function reE(){
-  var tb=g('eb');tb.innerHTML='';
-  if(!eP.length){
-    tb.innerHTML='<tr><td colspan="3" style="font-size:12px;color:var(--text3);padding:12px 8px;font-style:italic">No rows — use Bulk Import above or add manually.</td></tr>';
-    return;
-  }
-  eP.forEach(function(p,i){
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td><span class="nm">'+(i+1)+'</span></td>'+
-      '<td><input type="text" value="'+e(p)+'" placeholder="e.g. \'1234\' — blank = no-param" oninput="eP['+i+']=this.value;genSP()"></td>'+
-      '<td><button class="xb" onclick="eP.splice('+i+',1);reE();genSP()">&#215;</button></td>';
-    tb.appendChild(tr);
-  });
-}
-function addE(){eP.push('');reE();genSP();}
-function clrExec(){eP=[];g('spn').value='';g('spn').dataset.m='';reE();genSP();}
-function importBulk(){
-  var raw=g('bulk').value,st=g('bst');
-  if(!raw.trim()){st.innerHTML='<span class="er">Error</span> Nothing to import.';return;}
-  var lines=raw.split(/\r?\n/).map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
-  if(!lines.length){st.innerHTML='<span class="er">Error</span> No valid lines.';return;}
-  var added=0;
-  lines.forEach(function(line){
-    if(line.indexOf('\t')>-1){
-      var cols=line.split('\t').map(function(col){
-        col=col.trim();if(!col)return null;
-        if(/^'.*'$/.test(col)||/^\d+(\.\d+)?$/.test(col))return col;
-        return "'"+col+"'";
-      }).filter(function(x){return x!==null;});
-      if(cols.length){eP.push(cols.join(', '));added++;}
-    } else {eP.push(line);added++;}
-  });
-  reE();genSP();
-  st.innerHTML='<span class="ok">&#10003; Imported</span> <strong>'+added+'</strong> row(s).';
-  g('bulk').value='';
-}
-function genSP(){
-  var code=g('spc').value.trim();if(!code){hide();return;}
-  var spn=v('spn');
-  var out=notes()+"\n\n//SQL\n\n"+code+"\nGO\n\n//End SQL";
-  if(spn&&eP.length){
-    var eb="\n\n//SQL\n\n";
-    eP.forEach(function(p){eb+=p.trim()?"EXEC "+spn+" "+p.trim()+"\n":"EXEC "+spn+"\n";});
-    out+=eb+"\n//End SQL";
-  }
-  show(out);
-}
-
-// MIXED
-function parseM(){
-  var raw=v('mq'),st=g('mst');
-  if(!raw){st.innerHTML='<span class="er">Error</span> Paste at least one query.';return;}
-  var tokens=raw.split(/(?=\b(?:UPDATE|DELETE)\b)/i).map(function(s){return s.trim();}).filter(function(s){return /^(UPDATE|DELETE)\s/i.test(s);});
-  if(!tokens.length){st.innerHTML='<span class="er">Error</span> No statements found.';return;}
-  mR=[];var fail=0;
-  tokens.forEach(function(stmt){
-    stmt=stmt.replace(/;\s*$/,'').replace(/\bGO\b\s*$/i,'').trim();
-    stmt=normalizeBareSelects(stmt);
-    if(/^UPDATE\s/i.test(stmt)){
-      var tm=stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i);if(!tm){fail++;return;}
-      var tbl=tm[1];
-      var whr=extractWhere(stmt);
-      var frm=extractFrom(stmt);
-      var realTbl=resolveAlias(tbl,frm);
-      var setStr=extractSet(stmt);if(!setStr){fail++;return;}
-      sSet(setStr).forEach(function(pair){
-        var eq=pair.indexOf('=');if(eq<0)return;
-        var col=pair.substring(0,eq).trim().replace(/[\[\]]/g,''),val=pair.substring(eq+1).trim();
-        if(col)mR.push({type:'update',table:tbl,col:col,val:val,where:whr,from:frm,realTable:realTbl});
+    // Build alias->tableName map from a FROM clause like:
+    // "FROM fund_tran ft inner join other_tbl ot on ..."
+    // Returns the real table name for a given alias, or the alias itself if not found.
+    function resolveAlias(alias, fromClause) {
+      if (!fromClause) return alias;
+      var map = {};
+      var sqlKw = /^(ON|SET|WHERE|AND|OR|NOT|IN|IS|NULL|AS|INNER|LEFT|RIGHT|OUTER|CROSS|JOIN|FROM|SELECT|UPDATE|DELETE)$/i;
+      // Split on JOIN/FROM keywords to get individual table references
+      var segments = fromClause.split(/\b(?:FROM|INNER\s+JOIN|LEFT\s+(?:OUTER\s+)?JOIN|RIGHT\s+(?:OUTER\s+)?JOIN|CROSS\s+JOIN|FULL\s+(?:OUTER\s+)?JOIN|JOIN)\b/gi);
+      segments.forEach(function (seg) {
+        var part = seg.replace(/\bON\b[\s\S]*/i, '').trim();
+        var words = part.match(/\b\w+\b/g);
+        if (!words || words.length < 1) return;
+        var tname = words[0];
+        if (words.length >= 2 && !sqlKw.test(words[1])) map[words[1].toLowerCase()] = tname;
+        map[tname.toLowerCase()] = tname;
       });
-    } else {
-      var tm2=stmt.match(/^DELETE\s+FROM\s+\[?(\w+)\]?/i);if(!tm2){fail++;return;}
-      var tbl2=tm2[1];
-      mR.push({type:'delete',table:tbl2,backup:'bk_'+tbl2+bkSuffix(),where:extractWhere(stmt)});
+      return map[alias.toLowerCase()] || alias;
     }
-  });
-  if(!mR.length){st.innerHTML='<span class="er">Error</span> Could not parse.';return;}
-  var seen={},ctr={};
-  mR.forEach(function(r){if(r.type==='delete')seen[r.backup]=(seen[r.backup]||0)+1;});
-  mR.forEach(function(r){if(r.type==='delete'&&seen[r.backup]>1){ctr[r.backup]=(ctr[r.backup]||0)+1;r.backup=r.backup+'_'+ctr[r.backup];}});
-  var u=mR.filter(function(r){return r.type==='update';}).length;
-  var d=mR.filter(function(r){return r.type==='delete';}).length;
-  st.innerHTML='<span class="ok">&#10003; Parsed</span> <strong>'+u+'</strong> UPDATE + <strong>'+d+'</strong> DELETE.'+(fail?' <span class="er">'+fail+' failed</span>':'');
-  reM();g('mcard').classList.remove('hide');genM();
-}
-function reM(){
-  var con=g('mb');con.innerHTML='';
-  mR.forEach(function(r,i){
-    var isU=r.type==='update';
-    var wrap=document.createElement('div');wrap.className='mrow';
-    wrap.style.border='1px solid '+(isU?'var(--blue-border)':'var(--red-border)');
-    var hd=document.createElement('div');hd.className='mh';
-    hd.style.background=isU?'var(--blue-bg)':'var(--red-bg)';
-    hd.innerHTML='<span class="'+(isU?'tu':'td2')+'">'+(isU?'&#9654; UPDATE':'&#128465; DELETE')+'</span>'+
-      '<span style="font-size:11px;color:var(--text3);flex:1;font-family:Fira Code,monospace">row '+(i+1)+'</span>'+
-      '<button class="xb" onclick="mR.splice('+i+',1);reM();genM()">&#215;</button>';
-    var bd=document.createElement('div');bd.className='mb';
-    if(isU){
-      bd.style.gridTemplateColumns='1fr 1fr 2fr 2fr 3fr';
-      bd.innerHTML='<div><label>Table</label><input type="text" value="'+e(r.table)+'" oninput="mR['+i+'].table=this.value;genM()"></div>'+
-        '<div><label>Column</label><input type="text" value="'+e(r.col)+'" oninput="mR['+i+'].col=this.value;genM()"></div>'+
-        '<div><label>New Value</label><input type="text" value="'+e(r.val)+'" oninput="mR['+i+'].val=this.value;genM()"></div>'+
-        '<div><label>WHERE</label><input type="text" value="'+e(r.where)+'" oninput="mR['+i+'].where=this.value;genM()"></div>'+
-        '<div><label>FROM / JOIN</label><input type="text" value="'+e(r.from||'')+'" placeholder="(optional JOIN clause)" oninput="mR['+i+'].from=this.value;genM()"></div>';
-    } else {
-      bd.style.gridTemplateColumns='1fr 1fr 2fr';
-      bd.innerHTML='<div><label>Table</label><input type="text" value="'+e(r.table)+'" oninput="mR['+i+'].table=this.value;genM()"></div>'+
-        '<div><label>Backup Table</label><input type="text" value="'+e(r.backup)+'" oninput="mR['+i+'].backup=this.value;genM()"></div>'+
-        '<div><label>WHERE</label><input type="text" value="'+e(r.where)+'" oninput="mR['+i+'].where=this.value;genM()"></div>';
-    }
-    wrap.appendChild(hd);wrap.appendChild(bd);con.appendChild(wrap);
-  });
-}
-function addM(type){
-  mR.push(type==='update'?{type:'update',table:'',col:'',val:'',where:'',from:''}:{type:'delete',table:'',backup:'bk_',where:''});
-  reM();g('mcard').classList.remove('hide');genM();
-}
-function genM(){
-  if(!mR.length){hide();return;}
-  var cid=v('caseid'),blocks='';
-  var hasU=mR.some(function(r){return r.type==='update';});
-  mR.forEach(function(r){
-    if(!r.table)return;
-    if(r.type==='update'){
-      if(!r.col)return;
-      var w=r.where?'WHERE '+r.where:'';
-      var f=r.from?r.from.trim():'';
-      var newVal2=wrapVal(r.val);
-      var stn2=r.realTable||r.table;
-      blocks+="Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n"+
-        "(Select '"+cid+"', '"+stn2+"', '"+r.col+"', hmy, 'Updating "+r.col+"',\n"+
-        newVal2+", "+r.col+", getdate()\n"+
-        (f?"FROM "+f+(w?"\n"+w:""):"from "+r.table+(w?" "+w:""))+")\n"+
-        "UPDATE "+r.table+" SET "+r.col+" = "+r.val+(f?"\n"+f:"")+(w?" "+w:"")+"\nGO\n\n";
-    } else {
-      var w2=r.where?'WHERE '+r.where:'';
-      blocks+="select * into "+r.backup+" from "+r.table+(w2?" "+w2:"")+"\ndelete from "+r.table+(w2?" "+w2:"")+"\nGO\n\n";
-    }
-  });
-  if(!blocks.trim()){hide();return;}
-  show(notes()+"\n\n//SQL\n\n"+(hasU?DFH+"\n\n":"")+blocks.trimEnd()+"\n\n//End SQL");
-}
 
-// COPY / DOWNLOAD
-function doCopy(){
-  navigator.clipboard.writeText(g('pre').textContent).then(function(){
-    var f=g('cpd');f.classList.add('on');
-    setTimeout(function(){f.classList.remove('on');},2000);
-  });
-}
-function doDl(){
-  var text=g('pre').textContent,cas=v('caseid')||'package';
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
-  a.download='case_'+cas+'_'+mode+'.pkg';a.click();
-}
+    var DFH = "If Not Exists (Select Name From SysObjects Where Name = 'DataFixHistory')\n" +
+      "\tCreate Table DataFixHistory\n\t(\n" +
+      "\t\thMy NUMERIC(18,0) IDENTITY(1,1) Not Null,\n" +
+      "\t\thyCRM NUMERIC (18,0) Not Null,\n" +
+      "\t\tsTableName VARCHAR(400) Not Null,\n" +
+      "\t\tsColumnName VARCHAR(400) Not Null,\n" +
+      "\t\thForeignKey NUMERIC(18,0) Not Null,\n" +
+      "\t\tsNotes VarChar(2000) Not Null,\n" +
+      "\t\tsNewValue VARCHAR(100),\n" +
+      "\t\tsOldValue VARCHAR(100),\n" +
+      "\t\tdtDate DATETIME\n\t)\n" +
+      "Else If Not Exists (Select * From INFORMATION_SCHEMA.COLUMNS Where Table_Name = 'DataFixHistory' and Column_Name = 'sColumnName')\n" +
+      "\tAlter Table DataFixHistory Add sColumnName VARCHAR(400) Null\nGO";
 
-// PWA
-var dP;
-window.addEventListener('beforeinstallprompt',function(ev){
-  ev.preventDefault();
-  dP=ev;
-  var btn=document.getElementById('installBtn');
-  if(btn) btn.style.display='flex';
-});
-window.addEventListener('appinstalled',function(){
-  dP=null;
-  var btn=document.getElementById('installBtn');
-  if(btn) btn.style.display='none';
-});
-function doPwa(){
-  if(dP){ dP.prompt(); dP.userChoice.then(function(r){if(r.outcome==='accepted')dP=null;}); }
-}
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
-</script>
+    function sw(m) {
+      mode = m;
+      ['update', 'delete', 'sp', 'mixed'].forEach(function (x) {
+        g('p-' + x).classList.toggle('on', x === m);
+        g('n-' + x).classList.toggle('on', x === m);
+      });
+      g('pageTitle').textContent = titles[m];
+      hide();
+      if (m === 'sp') genSP();
+      if (m === 'mixed' && mR.length) genM();
+    }
+    function regen() {
+      if (mode === 'update' && uR.length) genU();
+      if (mode === 'delete' && dR.length) genD();
+      if (mode === 'sp') genSP();
+      if (mode === 'mixed' && mR.length) genM();
+    }
+    function clr(m) {
+      if (m === 'update') { g('uq').value = ''; g('ust').innerHTML = ''; g('ucard').classList.add('hide'); uR = []; }
+      if (m === 'delete') { g('dq').value = ''; g('dst').innerHTML = ''; g('dcard').classList.add('hide'); dR = []; }
+      if (m === 'sp') { g('spc').value = ''; g('spn').value = ''; g('spn').dataset.m = ''; eP = []; reE(); }
+      if (m === 'mixed') { g('mq').value = ''; g('mst').innerHTML = ''; g('mcard').classList.add('hide'); mR = []; reM(); }
+      hide();
+    }
+
+    // UPDATE
+    function parseU() {
+      var raw = v('uq'), st = g('ust');
+      if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one UPDATE query.'; return; }
+      var parts = raw.split(/(?=\bUPDATE\b)/i).map(function (s) { return s.trim(); }).filter(function (s) { return /^UPDATE\s/i.test(s); });
+      if (!parts.length) { st.innerHTML = '<span class="er">Error</span> No UPDATE statements found.'; return; }
+      uR = []; var fail = 0;
+      parts.forEach(function (stmt) {
+        stmt = stmt.replace(/;\s*$/, '').replace(/\bGO\b\s*$/i, '').trim();
+        stmt = normalizeBareSelects(stmt);
+        var tm = stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i); if (!tm) { fail++; return; }
+        var tbl = tm[1];
+        var whr = extractWhere(stmt);
+        var frm = extractFrom(stmt);
+        var realTbl = resolveAlias(tbl, frm);
+        var setStr = extractSet(stmt); if (!setStr) { fail++; return; }
+        sSet(setStr).forEach(function (pair) {
+          var eq = pair.indexOf('='); if (eq < 0) return;
+          var col = pair.substring(0, eq).trim().replace(/[\[\]]/g, ''), val = pair.substring(eq + 1).trim();
+          if (col) uR.push({ table: tbl, col: col, val: val, where: whr, from: frm, realTable: realTbl });
+        });
+      });
+      if (!uR.length) { st.innerHTML = '<span class="er">Error</span> Could not parse SET columns.'; return; }
+      st.innerHTML = '<span class="ok">&#10003; Parsed</span> <strong>' + uR.length + '</strong> row(s).' + (fail ? ' <span class="er">' + fail + ' failed</span>' : '');
+      reU(); g('ucard').classList.remove('hide'); genU();
+    }
+    function reU() {
+      var tb = g('ub'); tb.innerHTML = '';
+      uR.forEach(function (r, i) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><span class="nm">' + (i + 1) + '</span></td>' +
+          '<td><input type="text" value="' + e(r.realTable || r.table) + '" oninput="uR[' + i + '].realTable=this.value;genU()"></td>' +
+          '<td><input type="text" value="' + e(r.col) + '" oninput="uR[' + i + '].col=this.value;genU()"></td>' +
+          '<td><input type="text" value="' + e(r.val) + '" oninput="uR[' + i + '].val=this.value;genU()"></td>' +
+          '<td><input type="text" value="' + e(r.where) + '" oninput="uR[' + i + '].where=this.value;genU()"></td>' +
+          '<td><input type="text" value="' + e(r.from || '') + '" placeholder="(optional JOIN)" oninput="uR[' + i + '].from=this.value;genU()"></td>' +
+          '<td><button class="xb" onclick="uR.splice(' + i + ',1);reU();genU()">&#215;</button></td>';
+        tb.appendChild(tr);
+      });
+    }
+    function addU() {
+      var l = uR.length ? uR[uR.length - 1] : {};
+      uR.push({ table: l.table || '', col: l.col || '', val: l.val || '', where: '', from: '' });
+      reU(); g('ucard').classList.remove('hide'); genU();
+    }
+    function genU() {
+      var cid = v('caseid'), blocks = '';
+      uR.forEach(function (r) {
+        if (!r.col || !r.table) return;
+        var w = r.where ? 'WHERE ' + r.where : '';
+        var f = r.from ? r.from.trim() : '';
+        var newVal = wrapVal(r.val);
+        var stn = r.realTable || r.table;
+        blocks += "Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n" +
+          "(Select '" + cid + "', '" + stn + "', '" + r.col + "', hmy, 'Updating " + r.col + "',\n" +
+          newVal + ", " + r.col + ", getdate()\n" +
+          (f ? "FROM " + f + (w ? "\n" + w : "") : "from " + r.table + (w ? " " + w : "")) + ")\n\n" +
+          "UPDATE " + r.table + " SET " + r.col + " = " + r.val + (f ? "\nfrom " + f : "") + (w ? " " + w : "") + "\nGO\n\n";
+      });
+      if (!blocks) return;
+      show(notes() + "\n\n//SQL\n\n" + DFH + "\n\n" + blocks.trimEnd() + "\n\n//End SQL");
+    }
+
+    // DELETE
+    function extractDeleteJoin(stmt) {
+      // For DELETE FROM table [alias] JOIN ... WHERE ...
+      // Returns the join clause (everything from first JOIN to WHERE, or end)
+      var upper = stmt.toUpperCase();
+      var joinIdx = upper.search(/\b(?:INNER\s+JOIN|LEFT\s+(?:OUTER\s+)?JOIN|RIGHT\s+(?:OUTER\s+)?JOIN|CROSS\s+JOIN|JOIN)\b/);
+      if (joinIdx < 0) return '';
+      var whereIdx = -1, depth = 0;
+      for (var i = joinIdx; i < stmt.length; i++) {
+        if (stmt[i] === '(') depth++;
+        else if (stmt[i] === ')') depth--;
+        else if (depth === 0) {
+          var up = stmt.slice(i).toUpperCase();
+          if (/^WHERE[\s\r\n\t]/.test(up)) { whereIdx = i; break; }
+        }
+      }
+      return (whereIdx >= 0 ? stmt.slice(joinIdx, whereIdx) : stmt.slice(joinIdx)).trim();
+    }
+    function parseD() {
+      var raw = v('dq'), st = g('dst');
+      if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one DELETE query.'; return; }
+      var parts = raw.split(/(?=\bDELETE\b)/i).map(function (s) { return s.trim(); }).filter(function (s) { return /^DELETE\b/i.test(s); });
+      if (!parts.length) { st.innerHTML = '<span class="er">Error</span> No DELETE statements found.'; return; }
+      dR = []; var fail = 0;
+      parts.forEach(function (stmt) {
+        stmt = stmt.replace(/;\s*$/, '').replace(/\bGO\b\s*$/i, '').trim();
+
+        // UPDATED REGEX: Handles optional alias after DELETE
+        var tm = stmt.match(/^DELETE\s+(?:(\w+)\s+)?FROM\s+\[?(\w+)\]?(?:\s+(\w+))?/i);
+        if (!tm) { fail++; return; }
+
+        // If tm[1] exists, it's the target alias (e.g., 'fc'). 
+        // If it doesn't, the table is in tm[2].
+        var tbl = tm[1] ? tm[2] : tm[2];
+        var alias = tm[1] ? tm[1] : (tm[3] && !/^(INNER|LEFT|RIGHT|CROSS|JOIN|WHERE|ON)$/i.test(tm[3]) ? tm[3] : '');
+
+        var jn = extractDeleteJoin(stmt);
+        var whr = extractWhere(stmt);
+        dR.push({ table: tbl, alias: alias, backup: 'bk_' + tbl + bkSuffix(), where: whr, join: jn });
+      });
+      if (!dR.length) { st.innerHTML = '<span class="er">Error</span> Could not parse table names.'; return; }
+      var seen = {}, ctr = {};
+      dR.forEach(function (r) { seen[r.backup] = (seen[r.backup] || 0) + 1; });
+      dR.forEach(function (r) { if (seen[r.backup] > 1) { ctr[r.backup] = (ctr[r.backup] || 0) + 1; r.backup = r.backup + '_' + ctr[r.backup]; } });
+      st.innerHTML = '<span class="ok">&#10003; Parsed</span> <strong>' + dR.length + '</strong> DELETE(s).' + (fail ? ' <span class="er">' + fail + ' failed</span>' : '');
+      reD(); g('dcard').classList.remove('hide'); genD();
+    }
+    function reD() {
+      var tb = g('db'); tb.innerHTML = '';
+      dR.forEach(function (r, i) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><span class="nm">' + (i + 1) + '</span></td>' +
+          '<td><input type="text" value="' + e(r.table) + '" oninput="dR[' + i + '].table=this.value;genD()"></td>' +
+          '<td><input type="text" value="' + e(r.backup) + '" oninput="dR[' + i + '].backup=this.value;genD()"></td>' +
+          '<td><input type="text" value="' + e(r.where) + '" oninput="dR[' + i + '].where=this.value;genD()"></td>' +
+          '<td><input type="text" value="' + e(r.join || '') + '" placeholder="(optional JOIN)" oninput="dR[' + i + '].join=this.value;genD()"></td>' +
+          '<td><button class="xb" onclick="dR.splice(' + i + ',1);reD();genD()">&#215;</button></td>';
+        tb.appendChild(tr);
+      });
+    }
+    function addD() { dR.push({ table: '', alias: '', backup: 'bk_', where: '', join: '' }); reD(); g('dcard').classList.remove('hide'); genD(); }
+    function genD() {
+      var blocks = "", hasU = false;
+      dR.forEach(function (r) {
+        var jn = r.join || "", w = r.where || "";
+
+        // Check if the target is an alias (like 'fc') or a table name
+        var targetTable = r.table;
+        var targetAlias = r.alias;
+
+        // Logic to detect if the user used 'DELETE alias FROM table alias2'
+        if (jn && r.alias) {
+          // Look into the join string to find the real table name for the alias 'fc'
+          var joinMatch = jn.match(new RegExp("JOIN\\s+(\\w+)\\s+" + r.alias + "\\b", "i"));
+          if (joinMatch) {
+            targetTable = joinMatch[1]; // This would become 'fund_capitalcalltransaction'
+            targetAlias = r.alias;      // This remains 'fc'
+          }
+        }
+
+        var bkp = "bk_" + targetTable + bkSuffix();
+
+        if (jn) {
+          // For queries with JOINs
+          blocks += "SELECT " + (targetAlias ? targetAlias + ".*" : "*") + " INTO " + bkp + " FROM " + r.table + (r.alias ? " " + r.alias : "") + "\n" +
+            jn + (w ? "\nWHERE " + w : "") + "\n\n" + // Added WHERE here
+            "DELETE " + (targetAlias || targetTable) + " FROM " + r.table + (r.alias ? " " + r.alias : "") + "\n" +
+            jn + (w ? "\nWHERE " + w : "") + "\nGO\n\n"; // Added WHERE here
+        } else {
+          // For simple DELETE queries
+          blocks += "SELECT * INTO " + bkp + " FROM " + r.table + (w ? "\nWHERE " + w : "") + // Added WHERE here
+            "\nDELETE FROM " + r.table + (w ? "\nWHERE " + w : "") + "\nGO\n\n"; // Added WHERE here
+        }
+      });
+      if (!blocks.trim()) { hide(); return; }
+      show(notes() + "\n\n//SQL\n\n" + blocks.trimEnd() + "\n\n//End SQL");
+    }
+
+    // SP
+    function onSp() {
+      var code = g('spc').value, nf = g('spn');
+      if (!nf.dataset.m) {
+        var m = code.match(/(?:CREATE|ALTER)\s+(?:OR\s+ALTER\s+)?(?:PROCEDURE|PROC)\s+(?:\[?\w+\]?\.)?\[?(\w+)\]?/i);
+        if (m) nf.value = m[1];
+      }
+      genSP();
+    }
+    function reE() {
+      var tb = g('eb'); tb.innerHTML = '';
+      if (!eP.length) {
+        tb.innerHTML = '<tr><td colspan="3" style="font-size:12px;color:var(--text3);padding:12px 8px;font-style:italic">No rows — use Bulk Import above or add manually.</td></tr>';
+        return;
+      }
+      eP.forEach(function (p, i) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><span class="nm">' + (i + 1) + '</span></td>' +
+          '<td><input type="text" value="' + e(p) + '" placeholder="e.g. \'1234\' — blank = no-param" oninput="eP[' + i + ']=this.value;genSP()"></td>' +
+          '<td><button class="xb" onclick="eP.splice(' + i + ',1);reE();genSP()">&#215;</button></td>';
+        tb.appendChild(tr);
+      });
+    }
+    function addE() { eP.push(''); reE(); genSP(); }
+    function clrExec() { eP = []; g('spn').value = ''; g('spn').dataset.m = ''; reE(); genSP(); }
+    function importBulk() {
+      var raw = g('bulk').value, st = g('bst');
+      if (!raw.trim()) { st.innerHTML = '<span class="er">Error</span> Nothing to import.'; return; }
+      var lines = raw.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(function (l) { return l.length > 0; });
+      if (!lines.length) { st.innerHTML = '<span class="er">Error</span> No valid lines.'; return; }
+      var added = 0;
+      lines.forEach(function (line) {
+        if (line.indexOf('\t') > -1) {
+          var cols = line.split('\t').map(function (col) {
+            col = col.trim(); if (!col) return null;
+            if (/^'.*'$/.test(col) || /^\d+(\.\d+)?$/.test(col)) return col;
+            return "'" + col + "'";
+          }).filter(function (x) { return x !== null; });
+          if (cols.length) { eP.push(cols.join(', ')); added++; }
+        } else { eP.push(line); added++; }
+      });
+      reE(); genSP();
+      st.innerHTML = '<span class="ok">&#10003; Imported</span> <strong>' + added + '</strong> row(s).';
+      g('bulk').value = '';
+    }
+    function genSP() {
+      var code = g('spc').value.trim(); if (!code) { hide(); return; }
+      var spn = v('spn');
+      var out = notes() + "\n\n//SQL\n\n" + code + "\nGO\n\n//End SQL";
+      if (spn && eP.length) {
+        var eb = "\n\n//SQL\n\n";
+        eP.forEach(function (p) { eb += p.trim() ? "EXEC " + spn + " " + p.trim() + "\n" : "EXEC " + spn + "\n"; });
+        out += eb + "\n//End SQL";
+      }
+      show(out);
+    }
+
+    // MIXED
+    function parseM() {
+      var raw = v('mq'), st = g('mst');
+      if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one query.'; return; }
+      var tokens = raw.split(/(?=\b(?:UPDATE|DELETE)\b)/i).map(function (s) { return s.trim(); }).filter(function (s) { return /^(UPDATE|DELETE)\s/i.test(s); });
+      if (!tokens.length) { st.innerHTML = '<span class="er">Error</span> No statements found.'; return; }
+      mR = []; var fail = 0;
+      tokens.forEach(function (stmt) {
+        stmt = stmt.replace(/;\s*$/, '').replace(/\bGO\b\s*$/i, '').trim();
+        stmt = normalizeBareSelects(stmt);
+        if (/^UPDATE\s/i.test(stmt)) {
+          var tm = stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i); if (!tm) { fail++; return; }
+          var tbl = tm[1];
+          var whr = extractWhere(stmt);
+          var frm = extractFrom(stmt);
+          var realTbl = resolveAlias(tbl, frm);
+          var setStr = extractSet(stmt); if (!setStr) { fail++; return; }
+          sSet(setStr).forEach(function (pair) {
+            var eq = pair.indexOf('='); if (eq < 0) return;
+            var col = pair.substring(0, eq).trim().replace(/[\[\]]/g, ''), val = pair.substring(eq + 1).trim();
+            if (col) mR.push({ type: 'update', table: tbl, col: col, val: val, where: whr, from: frm, realTable: realTbl });
+          });
+        } else {
+          // UPDATED REGEX: Handles optional alias after DELETE
+          var tm2 = stmt.match(/^DELETE\s+(?:(\w+)\s+)?FROM\s+\[?(\w+)\]?(?:\s+(\w+))?/i);
+          if (!tm2) { fail++; return; }
+
+          var tbl2 = tm2[1] ? tm2[2] : tm2[2];
+          var alias2 = tm2[1] ? tm2[1] : (tm2[3] && !/^(INNER|LEFT|RIGHT|CROSS|JOIN|WHERE|ON)$/i.test(tm2[3]) ? tm2[3] : '');
+
+          var jn2 = extractDeleteJoin(stmt);
+          mR.push({ type: 'delete', table: tbl2, alias: alias2, backup: 'bk_' + tbl2 + bkSuffix(), where: extractWhere(stmt), join: jn2 });
+        }
+      });
+      if (!mR.length) { st.innerHTML = '<span class="er">Error</span> Could not parse.'; return; }
+      var seen = {}, ctr = {};
+      mR.forEach(function (r) { if (r.type === 'delete') seen[r.backup] = (seen[r.backup] || 0) + 1; });
+      mR.forEach(function (r) { if (r.type === 'delete' && seen[r.backup] > 1) { ctr[r.backup] = (ctr[r.backup] || 0) + 1; r.backup = r.backup + '_' + ctr[r.backup]; } });
+      var u = mR.filter(function (r) { return r.type === 'update'; }).length;
+      var d = mR.filter(function (r) { return r.type === 'delete'; }).length;
+      st.innerHTML = '<span class="ok">&#10003; Parsed</span> <strong>' + u + '</strong> UPDATE + <strong>' + d + '</strong> DELETE.' + (fail ? ' <span class="er">' + fail + ' failed</span>' : '');
+      reM(); g('mcard').classList.remove('hide'); genM();
+    }
+    function reM() {
+      var con = g('mb'); con.innerHTML = '';
+      mR.forEach(function (r, i) {
+        var isU = r.type === 'update';
+        var wrap = document.createElement('div'); wrap.className = 'mrow';
+        wrap.style.border = '1px solid ' + (isU ? 'var(--blue-border)' : 'var(--red-border)');
+        var hd = document.createElement('div'); hd.className = 'mh';
+        hd.style.background = isU ? 'var(--blue-bg)' : 'var(--red-bg)';
+        hd.innerHTML = '<span class="' + (isU ? 'tu' : 'td2') + '">' + (isU ? '&#9654; UPDATE' : '&#128465; DELETE') + '</span>' +
+          '<span style="font-size:11px;color:var(--text3);flex:1;font-family:Fira Code,monospace">row ' + (i + 1) + '</span>' +
+          '<button class="xb" onclick="mR.splice(' + i + ',1);reM();genM()">&#215;</button>';
+        var bd = document.createElement('div'); bd.className = 'mb';
+        if (isU) {
+          bd.style.gridTemplateColumns = '1fr 1fr 2fr 2fr 3fr';
+          bd.innerHTML = '<div><label>Table</label><input type="text" value="' + e(r.table) + '" oninput="mR[' + i + '].table=this.value;genM()"></div>' +
+            '<div><label>Column</label><input type="text" value="' + e(r.col) + '" oninput="mR[' + i + '].col=this.value;genM()"></div>' +
+            '<div><label>New Value</label><input type="text" value="' + e(r.val) + '" oninput="mR[' + i + '].val=this.value;genM()"></div>' +
+            '<div><label>WHERE</label><input type="text" value="' + e(r.where) + '" oninput="mR[' + i + '].where=this.value;genM()"></div>' +
+            '<div><label>FROM / JOIN</label><input type="text" value="' + e(r.from || '') + '" placeholder="(optional JOIN clause)" oninput="mR[' + i + '].from=this.value;genM()"></div>';
+        } else {
+          bd.style.gridTemplateColumns = '1fr 1fr 2fr 3fr';
+          bd.innerHTML = '<div><label>Table</label><input type="text" value="' + e(r.table) + '" oninput="mR[' + i + '].table=this.value;genM()"></div>' +
+            '<div><label>Backup Table</label><input type="text" value="' + e(r.backup) + '" oninput="mR[' + i + '].backup=this.value;genM()"></div>' +
+            '<div><label>WHERE</label><input type="text" value="' + e(r.where) + '" oninput="mR[' + i + '].where=this.value;genM()"></div>' +
+            '<div><label>FROM / JOIN</label><input type="text" value="' + e(r.join || '') + '" placeholder="(optional JOIN)" oninput="mR[' + i + '].join=this.value;genM()"></div>';
+        }
+        wrap.appendChild(hd); wrap.appendChild(bd); con.appendChild(wrap);
+      });
+    }
+    function addM(type) {
+      mR.push(type === 'update' ? { type: 'update', table: '', col: '', val: '', where: '', from: '' } : { type: 'delete', table: '', alias: '', backup: 'bk_', where: '', join: '' });
+      reM(); g('mcard').classList.remove('hide'); genM();
+    }
+    function genM() {
+      if (!mR.length) { hide(); return; }
+      var cid = v('caseid'), blocks = '';
+      var hasU = mR.some(function (r) { return r.type === 'update'; });
+
+      mR.forEach(function (r) {
+        if (!r.table) return;
+
+        if (r.type === 'update') {
+          if (!r.col) return;
+          // Pre-format WHERE and FROM to ensure keywords are included
+          var w = r.where ? 'WHERE ' + r.where : '';
+          var f = r.from ? r.from.trim() : '';
+          var newVal2 = wrapVal(r.val);
+          var stn2 = r.realTable || r.table;
+
+          blocks += "Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n" +
+            "(Select '" + cid + "', '" + stn2 + "', '" + r.col + "', hmy, 'Updating " + r.col + "',\n" +
+            newVal2 + ", " + r.col + ", getdate()\n" +
+            (f ? "FROM " + f + (w ? "\n" + w : "") : "FROM " + r.table + (w ? " " + w : "")) + ")\n\n" +
+            "UPDATE " + r.table + " SET " + r.col + " = " + r.val + (f ? "\nFROM " + f : "") + (w ? "\n" + w : "") + "\nGO\n\n";
+
+        } else {
+          // Logic for DELETE types: Resolve target table from joins if an alias is used
+          var targetTbl = r.table;
+          var targetAl = r.alias;
+
+          if (r.join && r.alias) {
+            var jm = r.join.match(new RegExp("JOIN\\s+(\\w+)\\s+" + r.alias + "\\b", "i"));
+            if (jm) {
+              targetTbl = jm[1];
+              targetAl = r.alias;
+            }
+          }
+
+          var bkp2 = "bk_" + targetTbl + bkSuffix();
+          var whereClause = r.where ? "\nWHERE " + r.where : "";
+
+          if (r.join) {
+            blocks += "SELECT " + (targetAl ? targetAl + ".*" : "*") + " INTO " + bkp2 +
+              " FROM " + r.table + (r.alias ? " " + r.alias : "") + "\n" +
+              r.join + whereClause + "\n\n" +
+              "DELETE " + (targetAl || targetTbl) + " FROM " + r.table + (r.alias ? " " + r.alias : "") + "\n" +
+              r.join + whereClause + "\nGO\n\n";
+          } else {
+            blocks += "SELECT * INTO " + bkp2 + " FROM " + r.table + whereClause +
+              "\nDELETE FROM " + r.table + whereClause + "\nGO\n\n";
+          }
+        }
+      });
+
+      if (!blocks.trim()) { hide(); return; }
+      show(notes() + "\n\n//SQL\n\n" + (hasU ? DFH + "\n\n" : "") + blocks.trimEnd() + "\n\n//End SQL");
+    }
+
+    // COPY / DOWNLOAD
+    function doCopy() {
+      navigator.clipboard.writeText(g('pre').textContent).then(function () {
+        var f = g('cpd'); f.classList.add('on');
+        setTimeout(function () { f.classList.remove('on'); }, 2000);
+      });
+    }
+    function doDl() {
+      var text = g('pre').textContent, cas = v('caseid') || 'package';
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+      a.download = 'case_' + cas + '_' + mode + '.pkg'; a.click();
+    }
+
+    // PWA
+    var dP;
+    window.addEventListener('beforeinstallprompt', function (ev) {
+      ev.preventDefault();
+      dP = ev;
+      var btn = document.getElementById('installBtn');
+      if (btn) btn.style.display = 'flex';
+    });
+    window.addEventListener('appinstalled', function () {
+      dP = null;
+      var btn = document.getElementById('installBtn');
+      if (btn) btn.style.display = 'none';
+    });
+    function doPwa() {
+      if (dP) { dP.prompt(); dP.userChoice.then(function (r) { if (r.outcome === 'accepted') dP = null; }); }
+    }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+
+        navigator.serviceWorker.register('sw.js').then(function (reg) {
+
+          // 🔥 ADD THIS (auto reload on update)
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            window.location.reload();
+          });
+
+        }).catch(function () { });
+
+      });
+    }
+
+  </script>
 </body>
+
 </html>
