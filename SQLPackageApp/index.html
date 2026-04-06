@@ -365,7 +365,7 @@ textarea{resize:vertical;font-size:12.5px;line-height:1.6}
       <div class="card hide" id="ucard">
         <div class="sec">Parsed Rows <em>— each row = one INSERT + UPDATE + GO block</em></div>
         <table class="qt">
-          <thead><tr><th style="width:32px">#</th><th style="width:110px">Table</th><th style="width:110px">Column</th><th>New Value</th><th>WHERE</th><th style="width:34px"></th></tr></thead>
+          <thead><tr><th style="width:32px">#</th><th style="width:110px">Table</th><th style="width:110px">Column</th><th>New Value</th><th>WHERE</th><th>FROM / JOIN</th><th style="width:34px"></th></tr></thead>
           <tbody id="ub"></tbody>
         </table>
         <div class="brow" style="margin-top:12px"><button class="btn" onclick="addU()">+ Add Row</button></div>
@@ -530,17 +530,21 @@ function bkSuffix(){
 // wrapVal — decides whether to wrap in quotes or not
 function wrapVal(val){
   val = val.trim();
-  // Subquery — no quotes
+  // Already a wrapped subquery e.g. (select ...)
   if(val.charAt(0)==='(') return val;
-  // Strip existing surrounding single quotes then rewrap
-  if(val.length>=2 && val.charAt(0)=="'" && val.charAt(val.length-1)=="'"){
-    return val;  // already properly quoted
-  }
-  // Strip existing double quotes
-  if(val.length>=2 && val.charAt(0)==='"' && val.charAt(val.length-1)==='"'){
-    return "'"+val.slice(1,-1)+"'";
-  }
-  // Plain value — wrap in quotes
+  // Bare SELECT subquery without parens — auto-wrap in ()
+  if(/^SELECT\s/i.test(val)) return '('+val+')';
+  // Already single-quoted — keep as-is
+  if(val.length>=2 && val.charAt(0)=="'" && val.charAt(val.length-1)=="'") return val;
+  // Double-quoted — convert to single
+  if(val.length>=2 && val.charAt(0)==='"' && val.charAt(val.length-1)==='"') return "'"+val.slice(1,-1)+"'";
+  // Column reference: alias.column or table.column e.g. tr.hmy, ft.dtstart
+  if(/^\w+\.\w+$/.test(val)) return val;
+  // Plain column name (no dots, no spaces) — could be a column ref, no quotes
+  if(/^\w+$/.test(val) && !/^\d+$/.test(val)) return val;
+  // SQL expression with operators, functions etc — no quotes
+  if(/[+\-*\/\(\)]/.test(val)) return val;
+  // Plain string literal — wrap in single quotes
   return "'"+val+"'";
 }
 
@@ -580,6 +584,91 @@ function notes(){
   return n;
 }
 
+// Normalize bare SELECT values in a SET clause:
+// "col = select x from t where y=1" -> "col = (select x from t where y=1)"
+// Strategy: after each '=' at depth 0, if the next non-space token is SELECT,
+// find the boundary of that bare select (next top-level comma, FROM, or end)
+// and wrap it in parens. We determine the boundary by finding the last
+// contiguous keyword chain (SELECT...FROM...WHERE...GROUP...ORDER...HAVING).
+function normalizeBareSelects(stmt){
+  var upper=stmt.toUpperCase();
+  var setIdx=upper.indexOf(' SET ');
+  if(setIdx<0) setIdx=upper.indexOf('\nSET');
+  if(setIdx<0) return stmt;
+  // Work only on the part after SET
+  var prefix=stmt.slice(0,setIdx+5);
+  var rest=stmt.slice(setIdx+5);
+  // Replace: = (whitespace)? SELECT ... (up to top-level FROM that is NOT part of bare select)
+  // We do this iteratively for each assignment
+  // Simple approach: find "= SELECT" pattern at depth 0 and wrap until the outer FROM/end
+  var result='', i=0, depth=0;
+  while(i<rest.length){
+    var ch=rest[i];
+    if(ch==='('){depth++;result+=ch;i++;continue;}
+    if(ch===')'){depth--;result+=ch;i++;continue;}
+    if(depth===0){
+      var up=rest.slice(i).toUpperCase();
+      // Match "= SELECT" — wrap the bare subquery
+      if(/^=\s*SELECT\s/i.test(up)){
+        // find the = sign
+        result+='=';i++;
+        // skip whitespace
+        while(i<rest.length && /\s/.test(rest[i])){result+=' ';i++;}
+        // now collect the bare SELECT until:
+        // a top-level comma (another SET assignment) OR end of the SET block
+        // We collect greedily including nested FROM/WHERE but stopping at
+        // a comma at depth 0 OR a FROM/WHERE that comes AFTER we've already
+        // seen at least one FROM (meaning it's the outer query's FROM)
+        var subStart=i, subDepth=0, fromCount=0;
+        var subEnd=rest.length;
+        var j=i;
+        while(j<rest.length){
+          var c=rest[j];
+          if(c==='('){subDepth++;j++;continue;}
+          if(c===')'){subDepth--;j++;continue;}
+          if(subDepth===0){
+            var u=rest.slice(j).toUpperCase();
+            if(c===',' ){subEnd=j;break;}
+            // Count top-level FROM keywords inside the bare select
+            if(/^FROM[\s\r\n]/.test(u)){fromCount++;j++;continue;}
+            // Second top-level FROM = outer query's FROM — stop before it
+            // Actually: the FIRST FROM after SELECT is part of the subquery (FROM table),
+            // any subsequent top-level FROM is the outer UPDATE's FROM clause.
+            // But there's only one "from property" in subquery and one outer FROM.
+            // So stop at the 2nd top-level FROM.
+            // Wait — we already incremented fromCount before checking, so:
+            // if fromCount>=1 and we see another FROM, that's the outer one.
+          }
+          j++;
+        }
+        // Re-do: proper two-FROM detection
+        subDepth=0;fromCount=0;subEnd=rest.length;
+        j=i;
+        while(j<rest.length){
+          var c2=rest[j];
+          if(c2==='('){subDepth++;j++;continue;}
+          if(c2===')'){subDepth--;j++;continue;}
+          if(subDepth===0){
+            var u2=rest.slice(j).toUpperCase();
+            if(c2===','){subEnd=j;break;}
+            if(/^FROM[\s\r\n]/.test(u2)){
+              fromCount++;
+              if(fromCount>=2){subEnd=j;break;}
+            }
+          }
+          j++;
+        }
+        var sub=rest.slice(subStart,subEnd).trim();
+        result+='('+sub+')';
+        i=subEnd;
+        continue;
+      }
+    }
+    result+=ch;i++;
+  }
+  return prefix+result;
+}
+
 function sSet(str){
   var parts=[],depth=0,start=0;
   for(var i=0;i<str.length;i++){
@@ -594,32 +683,122 @@ function sSet(str){
 function extractSet(stmt){
   var upper=stmt.toUpperCase();
   var setIdx=upper.indexOf(' SET ');
+  if (setIdx < 0) setIdx = upper.indexOf('\nSET');
   if(setIdx<0)return null;
-  var str=stmt.slice(setIdx+5);
-  var depth=0,i=0;
-  for(;i<str.length;i++){
-    if(str[i]==='(')depth++;
-    else if(str[i]===')')depth--;
-    else if(depth===0){
-      var up=str.slice(i).toUpperCase();
-      if(up.indexOf('WHERE ')===0||up.indexOf('WHERE\t')===0||up.indexOf('WHERE\n')===0)break;
-    }
-  }
-  return str.slice(0,i).trim();
+  // Use setEndIdx to find where assignments end (bare-SELECT-aware)
+  var endIdx=setEndIdx(stmt);
+  return stmt.slice(setIdx+5, endIdx).trim();
 }
 
 function extractWhere(stmt){
+  // Start scanning after the SET assignments end (past any FROM clause too)
+  var scanStart=0;
+  var upper=stmt.toUpperCase();
+  var hasSet=upper.indexOf(' SET ')>=0||upper.indexOf('\nSET')>=0;
+  if(hasSet){
+    // Skip past SET values first (respecting depth), then past FROM clause
+    var endSet=setEndIdx(stmt);
+    if(endSet>0){
+      // If there's a FROM clause, skip past it entirely to find the real WHERE
+      var depth=0,i=endSet;
+      var foundFrom=false;
+      for(;i<stmt.length;i++){
+        if(stmt[i]==='(') depth++;
+        else if(stmt[i]===')') depth--;
+        else if(depth===0){
+          var up=stmt.slice(i).toUpperCase();
+          if(/^FROM[\s\r\n]/.test(up)){foundFrom=true;}
+          if(foundFrom&&/^WHERE[\s\r\n\t]/.test(up)){return stmt.slice(i+6).trim();}
+          if(!foundFrom&&/^WHERE[\s\r\n\t]/.test(up)){return stmt.slice(i+6).trim();}
+        }
+      }
+      return '';
+    }
+  }
+  // Fallback: top-level WHERE scan from start (for DELETE etc.)
   var depth=0,lastWhere=-1;
-  for(var i=0;i<stmt.length;i++){
+  for(var i=scanStart;i<stmt.length;i++){
     if(stmt[i]==='(')depth++;
     else if(stmt[i]===')')depth--;
     else if(depth===0){
       var up=stmt.slice(i).toUpperCase();
-      if(up.indexOf('WHERE ')===0||up.indexOf('WHERE\t')===0||up.indexOf('WHERE\n')===0)lastWhere=i;
+      if(/^WHERE[\s\r\n\t]/.test(up))lastWhere=i;
     }
   }
   if(lastWhere<0)return '';
   return stmt.slice(lastWhere+6).trim();
+}
+
+// Find the index where the SET assignments end (top-level FROM or WHERE, respecting parens).
+// NOTE: call normalizeBareSelects(stmt) before this to wrap bare SELECT values in parens.
+function setEndIdx(stmt){
+  var upper=stmt.toUpperCase();
+  var setIdx=upper.indexOf(' SET ');
+  if(setIdx<0) setIdx=upper.indexOf('\nSET');
+  if(setIdx<0) return -1;
+  var i=setIdx+5, depth=0;
+  while(i<stmt.length){
+    var ch=stmt[i];
+    if(ch==='('){depth++;i++;continue;}
+    if(ch===')'){depth--;i++;continue;}
+    if(depth===0){
+      var up=stmt.slice(i).toUpperCase();
+      if(/^FROM[\s\r\n]/.test(up)||/^WHERE[\s\r\n\t]/.test(up)) return i;
+    }
+    i++;
+  }
+  return i;
+}
+
+function extractFrom(stmt){
+  var endSet=setEndIdx(stmt);
+  if(endSet<0) return '';
+  // From endSet onward, find top-level FROM keyword
+  var depth=0,i=endSet,absFrom=-1;
+  for(;i<stmt.length;i++){
+    if(stmt[i]==='(') depth++;
+    else if(stmt[i]===')') depth--;
+    else if(depth===0){
+      var up=stmt.slice(i).toUpperCase();
+      if(/^FROM[\s\r\n]/.test(up)){absFrom=i;break;}
+      // Stop if we hit WHERE before any FROM
+      if(/^WHERE[\s\r\n\t]/.test(up)) return '';
+    }
+  }
+  if(absFrom<0) return '';
+  // Now read from absFrom to top-level WHERE or end
+  depth=0;i=absFrom;var lastWhere=-1;
+  for(;i<stmt.length;i++){
+    if(stmt[i]==='(') depth++;
+    else if(stmt[i]===')') depth--;
+    else if(depth===0){
+      var up2=stmt.slice(i).toUpperCase();
+      if(/^WHERE[\s\r\n\t]/.test(up2)){lastWhere=i;break;}
+    }
+  }
+  var result=(lastWhere>=0?stmt.slice(absFrom,lastWhere):stmt.slice(absFrom)).trim();
+  // Strip leading FROM keyword so callers can prepend it themselves consistently
+  return result.replace(/^FROM\s+/i,'');
+}
+
+// Build alias->tableName map from a FROM clause like:
+// "FROM fund_tran ft inner join other_tbl ot on ..."
+// Returns the real table name for a given alias, or the alias itself if not found.
+function resolveAlias(alias, fromClause){
+  if(!fromClause) return alias;
+  var map={};
+  var sqlKw=/^(ON|SET|WHERE|AND|OR|NOT|IN|IS|NULL|AS|INNER|LEFT|RIGHT|OUTER|CROSS|JOIN|FROM|SELECT|UPDATE|DELETE)$/i;
+  // Split on JOIN/FROM keywords to get individual table references
+  var segments=fromClause.split(/\b(?:FROM|INNER\s+JOIN|LEFT\s+(?:OUTER\s+)?JOIN|RIGHT\s+(?:OUTER\s+)?JOIN|CROSS\s+JOIN|FULL\s+(?:OUTER\s+)?JOIN|JOIN)\b/gi);
+  segments.forEach(function(seg){
+    var part=seg.replace(/\bON\b[\s\S]*/i,'').trim();
+    var words=part.match(/\b\w+\b/g);
+    if(!words||words.length<1)return;
+    var tname=words[0];
+    if(words.length>=2&&!sqlKw.test(words[1])) map[words[1].toLowerCase()]=tname;
+    map[tname.toLowerCase()]=tname;
+  });
+  return map[alias.toLowerCase()]||alias;
 }
 
 var DFH="If Not Exists (Select Name From SysObjects Where Name = 'DataFixHistory')\n"+
@@ -670,14 +849,17 @@ function parseU(){
   uR=[];var fail=0;
   parts.forEach(function(stmt){
     stmt=stmt.replace(/;\s*$/,'').replace(/\bGO\b\s*$/i,'').trim();
+    stmt=normalizeBareSelects(stmt);
     var tm=stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i);if(!tm){fail++;return;}
     var tbl=tm[1];
     var whr=extractWhere(stmt);
+    var frm=extractFrom(stmt);
+    var realTbl=resolveAlias(tbl,frm);
     var setStr=extractSet(stmt);if(!setStr){fail++;return;}
     sSet(setStr).forEach(function(pair){
       var eq=pair.indexOf('=');if(eq<0)return;
       var col=pair.substring(0,eq).trim().replace(/[\[\]]/g,''),val=pair.substring(eq+1).trim();
-      if(col)uR.push({table:tbl,col:col,val:val,where:whr});
+      if(col)uR.push({table:tbl,col:col,val:val,where:whr,from:frm,realTable:realTbl});
     });
   });
   if(!uR.length){st.innerHTML='<span class="er">Error</span> Could not parse SET columns.';return;}
@@ -689,17 +871,18 @@ function reU(){
   uR.forEach(function(r,i){
     var tr=document.createElement('tr');
     tr.innerHTML='<td><span class="nm">'+(i+1)+'</span></td>'+
-      '<td><input type="text" value="'+e(r.table)+'" oninput="uR['+i+'].table=this.value;genU()"></td>'+
+      '<td><input type="text" value="'+e(r.realTable||r.table)+'" oninput="uR['+i+'].realTable=this.value;genU()"></td>'+
       '<td><input type="text" value="'+e(r.col)+'" oninput="uR['+i+'].col=this.value;genU()"></td>'+
       '<td><input type="text" value="'+e(r.val)+'" oninput="uR['+i+'].val=this.value;genU()"></td>'+
       '<td><input type="text" value="'+e(r.where)+'" oninput="uR['+i+'].where=this.value;genU()"></td>'+
+      '<td><input type="text" value="'+e(r.from||'')+'" placeholder="(optional JOIN)" oninput="uR['+i+'].from=this.value;genU()"></td>'+
       '<td><button class="xb" onclick="uR.splice('+i+',1);reU();genU()">&#215;</button></td>';
     tb.appendChild(tr);
   });
 }
 function addU(){
   var l=uR.length?uR[uR.length-1]:{};
-  uR.push({table:l.table||'',col:l.col||'',val:l.val||'',where:''});
+  uR.push({table:l.table||'',col:l.col||'',val:l.val||'',where:'',from:''});
   reU();g('ucard').classList.remove('hide');genU();
 }
 function genU(){
@@ -707,12 +890,14 @@ function genU(){
   uR.forEach(function(r){
     if(!r.col||!r.table)return;
     var w=r.where?'WHERE '+r.where:'';
+    var f=r.from?r.from.trim():'';
     var newVal=wrapVal(r.val);
+    var stn=r.realTable||r.table;
     blocks+="Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n"+
-      "(Select '"+cid+"', '"+r.table+"', '"+r.col+"', hmy, 'Updating "+r.col+"',\n"+
+      "(Select '"+cid+"', '"+stn+"', '"+r.col+"', hmy, 'Updating "+r.col+"',\n"+
       newVal+", "+r.col+", getdate()\n"+
-      "from "+r.table+" "+w+")\n"+
-      "UPDATE "+r.table+" SET "+r.col+" = "+r.val+" "+w+"\nGO\n\n";
+      (f?"FROM "+f+(w?"\n"+w:""):"from "+r.table+(w?" "+w:""))+")\n\n"+
+      "UPDATE "+r.table+" SET "+r.col+" = "+r.val+(f?"\n"+f:"")+(w?" "+w:"")+"\nGO\n\n";
   });
   if(!blocks)return;
   show(notes()+"\n\n//SQL\n\n"+DFH+"\n\n"+blocks.trimEnd()+"\n\n//End SQL");
@@ -828,15 +1013,18 @@ function parseM(){
   mR=[];var fail=0;
   tokens.forEach(function(stmt){
     stmt=stmt.replace(/;\s*$/,'').replace(/\bGO\b\s*$/i,'').trim();
+    stmt=normalizeBareSelects(stmt);
     if(/^UPDATE\s/i.test(stmt)){
       var tm=stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i);if(!tm){fail++;return;}
       var tbl=tm[1];
       var whr=extractWhere(stmt);
+      var frm=extractFrom(stmt);
+      var realTbl=resolveAlias(tbl,frm);
       var setStr=extractSet(stmt);if(!setStr){fail++;return;}
       sSet(setStr).forEach(function(pair){
         var eq=pair.indexOf('=');if(eq<0)return;
         var col=pair.substring(0,eq).trim().replace(/[\[\]]/g,''),val=pair.substring(eq+1).trim();
-        if(col)mR.push({type:'update',table:tbl,col:col,val:val,where:whr});
+        if(col)mR.push({type:'update',table:tbl,col:col,val:val,where:whr,from:frm,realTable:realTbl});
       });
     } else {
       var tm2=stmt.match(/^DELETE\s+FROM\s+\[?(\w+)\]?/i);if(!tm2){fail++;return;}
@@ -866,11 +1054,12 @@ function reM(){
       '<button class="xb" onclick="mR.splice('+i+',1);reM();genM()">&#215;</button>';
     var bd=document.createElement('div');bd.className='mb';
     if(isU){
-      bd.style.gridTemplateColumns='1fr 1fr 2fr 2fr';
+      bd.style.gridTemplateColumns='1fr 1fr 2fr 2fr 3fr';
       bd.innerHTML='<div><label>Table</label><input type="text" value="'+e(r.table)+'" oninput="mR['+i+'].table=this.value;genM()"></div>'+
         '<div><label>Column</label><input type="text" value="'+e(r.col)+'" oninput="mR['+i+'].col=this.value;genM()"></div>'+
         '<div><label>New Value</label><input type="text" value="'+e(r.val)+'" oninput="mR['+i+'].val=this.value;genM()"></div>'+
-        '<div><label>WHERE</label><input type="text" value="'+e(r.where)+'" oninput="mR['+i+'].where=this.value;genM()"></div>';
+        '<div><label>WHERE</label><input type="text" value="'+e(r.where)+'" oninput="mR['+i+'].where=this.value;genM()"></div>'+
+        '<div><label>FROM / JOIN</label><input type="text" value="'+e(r.from||'')+'" placeholder="(optional JOIN clause)" oninput="mR['+i+'].from=this.value;genM()"></div>';
     } else {
       bd.style.gridTemplateColumns='1fr 1fr 2fr';
       bd.innerHTML='<div><label>Table</label><input type="text" value="'+e(r.table)+'" oninput="mR['+i+'].table=this.value;genM()"></div>'+
@@ -881,7 +1070,7 @@ function reM(){
   });
 }
 function addM(type){
-  mR.push(type==='update'?{type:'update',table:'',col:'',val:'',where:''}:{type:'delete',table:'',backup:'bk_',where:''});
+  mR.push(type==='update'?{type:'update',table:'',col:'',val:'',where:'',from:''}:{type:'delete',table:'',backup:'bk_',where:''});
   reM();g('mcard').classList.remove('hide');genM();
 }
 function genM(){
@@ -893,12 +1082,14 @@ function genM(){
     if(r.type==='update'){
       if(!r.col)return;
       var w=r.where?'WHERE '+r.where:'';
+      var f=r.from?r.from.trim():'';
       var newVal2=wrapVal(r.val);
+      var stn2=r.realTable||r.table;
       blocks+="Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n"+
-        "(Select '"+cid+"', '"+r.table+"', '"+r.col+"', hmy, 'Updating "+r.col+"',\n"+
+        "(Select '"+cid+"', '"+stn2+"', '"+r.col+"', hmy, 'Updating "+r.col+"',\n"+
         newVal2+", "+r.col+", getdate()\n"+
-        "from "+r.table+" "+w+")\n"+
-        "UPDATE "+r.table+" SET "+r.col+" = "+r.val+" "+w+"\nGO\n\n";
+        (f?"FROM "+f+(w?"\n"+w:""):"from "+r.table+(w?" "+w:""))+")\n"+
+        "UPDATE "+r.table+" SET "+r.col+" = "+r.val+(f?"\n"+f:"")+(w?" "+w:"")+"\nGO\n\n";
     } else {
       var w2=r.where?'WHERE '+r.where:'';
       blocks+="select * into "+r.backup+" from "+r.table+(w2?" "+w2:"")+"\ndelete from "+r.table+(w2?" "+w2:"")+"\nGO\n\n";
