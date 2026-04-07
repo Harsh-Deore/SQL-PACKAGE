@@ -1873,7 +1873,7 @@
       if(size<=0){prev.innerHTML='<span style="color:var(--red)">Enter a valid batch size</span>';return;}
 
       if(size >= total){
-        prev.innerHTML = '<span style="color:var(--green)"><b>'+total+'</b> EXECs total — each gets its own file = <b>'+total+' files</b></span>';
+        prev.innerHTML = '<span style="color:var(--blue)"><b>'+total+'</b> EXECs — all will be in <b>1 package file</b></span>';
       } else {
         var batches = Math.ceil(total/size);
         prev.innerHTML = '<span style="color:var(--green)"><b>'+total+'</b> EXECs ÷ <b>'+size+'</b> per batch = <b>'+batches+' package files</b></span>';
