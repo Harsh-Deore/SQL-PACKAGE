@@ -1902,9 +1902,17 @@
       var cas = v('caseid')||'package';
 
       if(size >= filled.length){ 
-        alert("Batch size is greater than or equal to total EXEC records. Please enter a smaller size.");
-        return;
-      } else {
+          var eb = "\n\n//SQL\n\n";
+          filled.forEach(function(p){
+            eb += p.trim() ? "EXEC "+spn+" "+p.trim()+"\n" : "EXEC "+spn+"\n";
+          });
+          eb += "\n//End SQL";
+
+          packages.push({
+            name: 'case_'+cas+'_sp_all_exec.pkg',
+            content: spBlock + eb
+          });
+        } else {
         // Split into batches
         for(var i=0;i<filled.length;i+=size){
           var batch = filled.slice(i, i+size);
