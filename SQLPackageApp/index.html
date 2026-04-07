@@ -1901,17 +1901,9 @@
       var spBlock = notes()+"\n\n//SQL\n\n"+code+"\nGO\n\n//End SQL";
       var cas = v('caseid')||'package';
 
-      if(size >= filled.length){
-        // Each EXEC gets its own file
-        filled.forEach(function(p, i){
-          var eb = "\n\n//SQL\n\n";
-          eb += p.trim() ? "EXEC "+spn+" "+p.trim()+"\n" : "EXEC "+spn+"\n";
-          eb += "\n//End SQL";
-          packages.push({
-            name: 'case_'+cas+'_sp_exec_'+(i+1)+'.pkg',
-            content: spBlock + eb
-          });
-        });
+      if(size >= filled.length){ 
+        alert("Batch size is greater than or equal to total EXEC records. Please enter a smaller size.");
+        return;
       } else {
         // Split into batches
         for(var i=0;i<filled.length;i+=size){
