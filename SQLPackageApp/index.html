@@ -39,6 +39,7 @@
       --green-border: #a7f3d0;
       --amber: #d97706;
       --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
       --shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
       --shadow-md: 0 4px 12px rgba(0, 0, 0, .08), 0 2px 4px rgba(0, 0, 0, .04);
     }
@@ -1033,6 +1034,35 @@
             <button class="btn" onclick="addE()">+ Add EXEC Row</button>
             <button class="btn rd" onclick="clrExec()">&#8635;&nbsp; Clear All</button>
           </div>
+
+          <!-- BATCH SPLIT OPTION -->
+          <div class="div" style="margin-top:16px"></div>
+          <div id="batchToggleWrap">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text)">
+                <input type="checkbox" id="batchEnabled" onchange="toggleBatch()" style="width:16px;height:16px;cursor:pointer;accent-color:var(--amber)">
+                Split into batch packages
+              </label>
+              <span style="font-size:11px;color:var(--text3)">— optional, for large EXEC sets</span>
+            </div>
+            <div id="batchOptions" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:10px;padding:14px 16px;margin-top:4px">
+              <div class="inf" style="margin-bottom:12px;background:rgba(255,179,71,0.1);border-color:rgba(255,179,71,0.3)">
+                Enter how many EXEC statements per package. Each batch will download as a separate .pkg file inside a zip.<br>
+                <strong>Note:</strong> If batch size &gt; total EXECs, each EXEC gets its own file. If &le; total, batches of that size are created.
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <div>
+                  <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">EXECs per batch</label>
+                  <input type="number" id="batchSize" value="1000" min="1" style="width:130px;font-family:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);color:var(--text)" oninput="updateBatchPreview()">
+                </div>
+                <div id="batchPreview" style="font-size:13px;color:var(--text2);margin-top:18px"></div>
+              </div>
+              <div class="brow" style="margin-top:12px">
+                <button class="btn dk" style="background:var(--amber);border-color:var(--amber);box-shadow:0 2px 8px rgba(217,119,6,.3)" onclick="downloadBatches()">&#8595;&nbsp; Download All Batches (.zip)</button>
+              </div>
+              <div class="st" id="batchSt"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1150,7 +1180,13 @@
       // Plain column name (no dots, no spaces) — could be a column ref, no quotes
       if (/^\w+$/.test(val) && !/^\d+$/.test(val)) return val;
       // SQL expression with operators, functions etc — no quotes
-      if (/[+\-*\/\(\)]/.test(val)) return val;
+      if (
+        /\b(CASE|WHEN|THEN|ELSE|END|GETDATE|NULL|CAST|CONVERT)\b/i.test(val) || 
+        /[+\-*\/\(\)]/.test(val) ||
+        /\s(AND|OR|NOT)\s/i.test(val) // SQL logic operators for WHERE/CASE
+      ) {
+        return val; 
+      }
       // Plain string literal — wrap in single quotes
       return "'" + val + "'";
     }
@@ -1493,22 +1529,34 @@
       reU(); g('ucard').classList.remove('hide'); genU();
     }
     function genU() {
-      var cid = v('caseid'), blocks = '';
-      uR.forEach(function (r) {
-        if (!r.col || !r.table) return;
-        var w = r.where ? 'WHERE ' + r.where : '';
-        var f = r.from ? r.from.trim() : '';
-        var newVal = wrapVal(r.val);
-        var stn = r.realTable || r.table;
-        blocks += "Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n" +
-          "(Select '" + cid + "', '" + stn + "', '" + r.col + "', hmy, 'Updating " + r.col + "',\n" +
-          newVal + ", " + r.col + ", getdate()\n" +
-          (f ? "FROM " + f + (w ? "\n" + w : "") : "from " + r.table + (w ? " " + w : "")) + ")\n\n" +
-          "UPDATE " + r.table + " SET " + r.col + " = " + r.val + (f ? "\nfrom " + f : "") + (w ? " " + w : "") + "\nGO\n\n";
-      });
-      if (!blocks) return;
-      show(notes() + "\n\n//SQL\n\n" + DFH + "\n\n" + blocks.trimEnd() + "\n\n//End SQL");
-    }
+  var cid = v('caseid'), blocks = '';
+  uR.forEach(function (r) {
+    if (!r.col || !r.table) return;
+
+    // --- CHANGE 1: Space ki jagah \n (newline) dala ---
+    var w = r.where ? '\nWHERE ' + r.where : ''; 
+    
+    var f = r.from ? r.from.trim() : '';
+    var newVal = wrapVal(r.val);
+    var stn = r.realTable || r.table;
+
+    blocks += "Insert into DatafixHistory (hycrm, sTableName, sColumnName, hForeignKey, sNotes, sNewValue, sOldValue, dtdate)\n" +
+      "(Select '" + cid + "', '" + stn + "', '" + r.col + "', hmy, 'Updating " + r.col + "',\n" +
+      newVal + ", " + r.col + ", getdate()\n" +
+      
+      // Yahan bhi formatting sahi ho jayegi
+      (f ? "FROM " + f + (w ? w : "") : "FROM " + r.table + (w ? w : "")) + ")\n\n" +
+      
+      // --- CHANGE 2: UPDATE statement mein space hata kar \n ensure kiya ---
+      "UPDATE " + r.table + "\nSET " + r.col + " = " + r.val + 
+      (f ? "\nFROM " + f : "") + 
+      (w ? w : "") + // Ab w ke andar pehle se \n hai, toh yahan space ki zaroorat nahi
+      "\nGO\n\n";
+  });
+
+  if (!blocks) return;
+  show(notes() + "\n\n//SQL\n\n" + DFH + "\n\n" + blocks.trimEnd() + "\n\n//End SQL");
+}
 
     // DELETE
     function extractDeleteJoin(stmt) {
@@ -1808,6 +1856,168 @@
       var a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
       a.download = 'case_' + cas + '_' + mode + '.pkg'; a.click();
+    }
+
+    // BATCH SPLIT
+    function toggleBatch(){
+      var enabled = document.getElementById('batchEnabled').checked;
+      document.getElementById('batchOptions').style.display = enabled ? 'block' : 'none';
+      if(enabled) updateBatchPreview();
+    }
+
+    function updateBatchPreview(){
+      var size = parseInt(document.getElementById('batchSize').value)||0;
+      var total = eP.filter(function(p){return p.trim()!=='';}).length;
+      var prev = document.getElementById('batchPreview');
+      if(!total){prev.innerHTML='<span style="color:var(--text3)">No EXEC rows yet</span>';return;}
+      if(size<=0){prev.innerHTML='<span style="color:var(--red)">Enter a valid batch size</span>';return;}
+
+      if(size >= total){
+        prev.innerHTML = '<span style="color:var(--green)"><b>'+total+'</b> EXECs total — each gets its own file = <b>'+total+' files</b></span>';
+      } else {
+        var batches = Math.ceil(total/size);
+        prev.innerHTML = '<span style="color:var(--green)"><b>'+total+'</b> EXECs ÷ <b>'+size+'</b> per batch = <b>'+batches+' package files</b></span>';
+      }
+    }
+
+    function downloadBatches(){
+      var spn = v('spn');
+      var code = g('spc').value.trim();
+      var st = document.getElementById('batchSt');
+
+      if(!spn){st.innerHTML='<span class="er">Error</span> SP Name is required.';return;}
+      if(!code){st.innerHTML='<span class="er">Error</span> SP code is required.';return;}
+
+      var filled = eP.filter(function(p){return p.trim()!=='';});
+      if(!filled.length){st.innerHTML='<span class="er">Error</span> No EXEC rows to batch.';return;}
+
+      var size = parseInt(document.getElementById('batchSize').value)||0;
+      if(size<=0){st.innerHTML='<span class="er">Error</span> Enter a valid batch size.';return;}
+
+      st.innerHTML='<span style="color:var(--text2)">Generating batches...</span>';
+
+      // Build packages array
+      var packages = [];
+      var spBlock = notes()+"\n\n//SQL\n\n"+code+"\nGO\n\n//End SQL";
+      var cas = v('caseid')||'package';
+
+      if(size >= filled.length){
+        // Each EXEC gets its own file
+        filled.forEach(function(p, i){
+          var eb = "\n\n//SQL\n\n";
+          eb += p.trim() ? "EXEC "+spn+" "+p.trim()+"\n" : "EXEC "+spn+"\n";
+          eb += "\n//End SQL";
+          packages.push({
+            name: 'case_'+cas+'_sp_exec_'+(i+1)+'.pkg',
+            content: spBlock + eb
+          });
+        });
+      } else {
+        // Split into batches
+        for(var i=0;i<filled.length;i+=size){
+          var batch = filled.slice(i, i+size);
+          var batchNum = Math.floor(i/size)+1;
+          var eb = "\n\n//SQL\n\n";
+          batch.forEach(function(p){
+            eb += p.trim() ? "EXEC "+spn+" "+p.trim()+"\n" : "EXEC "+spn+"\n";
+          });
+          eb += "\n//End SQL";
+          var start = i+1, end = Math.min(i+size, filled.length);
+          packages.push({
+            name: 'case_'+cas+'_sp_batch'+batchNum+'_('+start+'-'+end+').pkg',
+            content: spBlock + eb
+          });
+        }
+      }
+
+      // If only 1 package — download directly, no zip needed
+      if(packages.length === 1){
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([packages[0].content],{type:'text/plain'}));
+        a.download = packages[0].name;
+        a.click();
+        st.innerHTML='<span class="ok">&#10003; Downloaded</span> 1 package file.';
+        return;
+      }
+
+      // Multiple packages — build zip manually using stored strings, then download as zip
+      buildZipAndDownload(packages, 'case_'+cas+'_sp_batches.zip', st);
+    }
+
+    // Simple ZIP builder (no external lib needed — uses deflate-less store method)
+    function buildZipAndDownload(files, zipName, st){
+      // Build a ZIP file using STORE (no compression) — pure JS, no library
+      function strToBytes(str){
+        var arr = new Uint8Array(str.length);
+        for(var i=0;i<str.length;i++) arr[i]=str.charCodeAt(i)&0xff;
+        return arr;
+      }
+      function u16(n){ return [n&0xff,(n>>8)&0xff]; }
+      function u32(n){ return [n&0xff,(n>>8)&0xff,(n>>16)&0xff,(n>>24)&0xff]; }
+      function concat(){
+        var total=0;
+        for(var i=0;i<arguments.length;i++) total+=arguments[i].length;
+        var out=new Uint8Array(total), off=0;
+        for(var i=0;i<arguments.length;i++){out.set(arguments[i],off);off+=arguments[i].length;}
+        return out;
+      }
+      function crc32(data){
+        var table=[];
+        for(var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=c&1?0xEDB88320^(c>>>1):c>>>1;table[i]=c;}
+        var crc=0xFFFFFFFF;
+        for(var i=0;i<data.length;i++) crc=table[(crc^data[i])&0xff]^(crc>>>8);
+        return (crc^0xFFFFFFFF)>>>0;
+      }
+
+      var localHeaders=[], centralDir=[], offset=0;
+      var now=new Date();
+      var dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xffff;
+      var dosDate=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xffff;
+
+      files.forEach(function(f){
+        var nameBytes = new TextEncoder().encode(f.name);
+        var dataBytes = strToBytes(f.content);
+        var crc = crc32(dataBytes);
+        var size = dataBytes.length;
+
+        // Local file header
+        var lh = new Uint8Array([
+          0x50,0x4B,0x03,0x04, // signature
+          0x14,0x00,            // version needed
+          0x00,0x00,            // flags
+          0x00,0x00,            // compression (store)
+        ].concat(u16(dosTime)).concat(u16(dosDate)).concat(u32(crc)).concat(u32(size)).concat(u32(size)).concat(u16(nameBytes.length)).concat([0x00,0x00]));
+
+        localHeaders.push(concat(lh, nameBytes, dataBytes));
+
+        // Central dir entry
+        var cd = new Uint8Array([
+          0x50,0x4B,0x01,0x02, // signature
+          0x14,0x00,            // version made by
+          0x14,0x00,            // version needed
+          0x00,0x00,            // flags
+          0x00,0x00,            // compression
+        ].concat(u16(dosTime)).concat(u16(dosDate)).concat(u32(crc)).concat(u32(size)).concat(u32(size)).concat(u16(nameBytes.length)).concat([0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]).concat(u32(offset)));
+        centralDir.push(concat(cd, nameBytes));
+
+        offset += lh.length + nameBytes.length + dataBytes.length;
+      });
+
+      var allLocal = concat.apply(null, localHeaders);
+      var allCentral = concat.apply(null, centralDir);
+      var cdSize = allCentral.length;
+      var eocd = new Uint8Array([
+        0x50,0x4B,0x05,0x06,0x00,0x00,0x00,0x00,
+      ].concat(u16(files.length)).concat(u16(files.length)).concat(u32(cdSize)).concat(u32(offset)).concat([0x00,0x00]));
+
+      var zipData = concat(allLocal, allCentral, eocd);
+      var blob = new Blob([zipData],{type:'application/zip'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = zipName;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+      st.innerHTML='<span class="ok">&#10003; Downloaded</span> <strong>'+files.length+'</strong> package files as zip.';
     }
 
     // PWA
