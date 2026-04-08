@@ -1048,8 +1048,7 @@
             <div id="batchOptions" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:10px;padding:14px 16px;margin-top:4px">
               <div class="inf" style="margin-bottom:12px;background:rgba(255,179,71,0.1);border-color:rgba(255,179,71,0.3)">
                 Enter how many EXEC statements per package. Each batch will download as a separate .pkg file inside a zip.<br>
-                <strong>Note:</strong> If batch size &gt; total EXECs, each EXEC gets its own file. If &le; total, batches of that size are created.
-              </div>
+              <strong>Note:</strong> If batch size &gt;= total EXECs, all EXEC statements will be included in a single package file. If batch size &lt; total EXECs, batches of that size will be created.              </div>
               <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                 <div>
                   <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">EXECs per batch</label>
