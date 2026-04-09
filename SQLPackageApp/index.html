@@ -1706,7 +1706,7 @@
       var out = notes() + "\n\n//SQL\n\n" + code + "\nGO\n\n//End SQL";
       if (spn && eP.length) {
         var eb = "\n\n//SQL\n\n";
-        eP.forEach(function (p) { eb += p.trim() ? "//SQL EXEC " + spn + " " + p.trim() + "//END SQL\n" : "//SQL EXEC " + spn + "//END SQL\n"; });
+        eP.forEach(function (p) { eb += p.trim() ? "EXEC " + spn + " " + p.trim() + "\n" : "EXEC " + spn + "\n"; });
         out += eb + "\n//End SQL";
       }
       show(out);
@@ -1918,7 +1918,7 @@
           var batchNum = Math.floor(i/size)+1;
           var eb = "\n\n//SQL\n\n";
           batch.forEach(function(p){
-            eb += p.trim() ? "EXEC "+spn+" "+p.trim()+"\n" : "EXEC "+spn+"\n";
+            eb += p.trim() ? "//SQL EXEC "+spn+" "+p.trim()+" //End SQL\n" : "//SQL EXEC "+spn+" //End SQL\n";
           });
           eb += "\n//End SQL";
           var start = i+1, end = Math.min(i+size, filled.length);
