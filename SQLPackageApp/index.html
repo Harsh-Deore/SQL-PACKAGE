@@ -1700,10 +1700,25 @@
       st.innerHTML = '<span class="ok">&#10003; Imported</span> <strong>' + added + '</strong> row(s).';
       g('bulk').value = '';
     }
+    function splitSpCode(code) {
+      // Split code into [preCreate, createBlock]
+      // preCreate = everything before the CREATE OR ALTER line (trimmed)
+      // createBlock = from CREATE OR ALTER to end
+      var m = code.match(/(^[\s\S]*?)(\bCREATE\s+(?:OR\s+ALTER\s+)?(?:PROCEDURE|PROC)\b[\s\S]*)$/i);
+      if (!m) return { pre: '', create: code };
+      return { pre: m[1].trim(), create: m[2].trim() };
+    }
     function genSP() {
       var code = g('spc').value.trim(); if (!code) { hide(); return; }
       var spn = v('spn');
-      var out = notes() + "\n\n//SQL\n\n" + code + "\nGO\n\n//End SQL";
+      var parts = splitSpCode(code);
+      var out = notes();
+      if (parts.pre) {
+        out += "\n\n//SQL\n\n" + parts.pre + "\n\n//End SQL";
+        out += "\n\n//SQL\n\n" + parts.create + "\nGO\n\n//End SQL";
+      } else {
+        out += "\n\n//SQL\n\n" + parts.create + "\nGO\n\n//End SQL";
+      }
       if (spn && eP.length) {
         var eb = "\n\n//SQL\n\n";
         eP.forEach(function (p) { eb += p.trim() ? "EXEC " + spn + " " + p.trim() + "\n" : "EXEC " + spn + "\n"; });
@@ -1897,7 +1912,10 @@
 
       // Build packages array
       var packages = [];
-      var spBlock = notes()+"\n\n//SQL\n\n"+code+"\nGO\n\n//End SQL";
+      var spParts = splitSpCode(code);
+      var spBlock = spParts.pre
+        ? notes()+"\n\n//SQL\n\n"+spParts.pre+"\n\n//End SQL\n\n//SQL\n\n"+spParts.create+"\nGO\n\n//End SQL"
+        : notes()+"\n\n//SQL\n\n"+spParts.create+"\nGO\n\n//End SQL";
       var cas = v('caseid')||'package';
 
       if(size >= filled.length){ 
