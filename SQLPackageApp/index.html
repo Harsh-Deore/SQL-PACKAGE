@@ -1586,13 +1586,31 @@
       uR.push({ table: l.table || '', col: l.col || '', val: l.val || '', where: '', from: '' });
       reU(); g('ucard').classList.remove('hide'); genU();
     }
+    // Auto-balance unclosed brackets in a SQL string
+    function fixBrackets(str) {
+      if (!str) return str;
+      var open = 0;
+      var inStr = false, strCh = '';
+      for (var i = 0; i < str.length; i++) {
+        var ch = str[i];
+        if (!inStr && (ch === "'" || ch === '"')) { inStr = true; strCh = ch; continue; }
+        if (inStr && ch === strCh) { inStr = false; continue; }
+        if (inStr) continue;
+        if (ch === '(') open++;
+        else if (ch === ')') { if (open > 0) open--; }
+      }
+      // Append missing closing brackets
+      for (var j = 0; j < open; j++) str += ')';
+      return str;
+    }
+
     function genU() {
   var cid = v('caseid'), blocks = '';
   uR.forEach(function (r) {
     if (!r.col || !r.table) return;
 
     // --- CHANGE 1: Space ki jagah \n (newline) dala ---
-    var w = r.where ? '\nWHERE ' + r.where : ''; 
+    var w = r.where ? '\nWHERE ' + fixBrackets(r.where) : ''; 
     
     var f = r.from ? r.from.trim() : '';
     var newVal = wrapVal(r.val);
@@ -2098,9 +2116,8 @@
 
     // ── INSERT / ALTER ──────────────────────────────────────────────────
 
-    // Split VALUES list respecting nested parens/subqueries
+    // Split a single VALUES (...) group into individual col values
     function splitValues(stmt) {
-      // Find VALUES ( ... )
       var upper = stmt.toUpperCase();
       var vIdx = upper.search(/\bVALUES\s*\(/);
       if (vIdx < 0) return [];
@@ -2120,20 +2137,68 @@
       return vals;
     }
 
+    // Extract ALL VALUES rows from an INSERT statement — returns array of value-arrays
+    function extractAllValuesRows(stmt) {
+      var rows = [];
+      var pos = 0;
+      var upper = stmt.toUpperCase();
+      while (pos < stmt.length) {
+        var vIdx = upper.indexOf('VALUES', pos);
+        if (vIdx < 0) break;
+        // Skip 'VALUES' that's inside a subquery (preceded by SELECT or inside parens)
+        var parenStart = stmt.indexOf('(', vIdx + 6);
+        if (parenStart < 0) break;
+        // Extract one row
+        var vals = [], depth = 0, i = parenStart + 1, start = parenStart + 1, inStr = false, strCh = '';
+        while (i < stmt.length) {
+          var ch = stmt[i];
+          if (!inStr && (ch === "'" || ch === '"')) { inStr = true; strCh = ch; i++; continue; }
+          if (inStr && ch === strCh && stmt[i+1] === strCh) { i += 2; continue; } // escaped quote
+          if (inStr && ch === strCh) { inStr = false; i++; continue; }
+          if (inStr) { i++; continue; }
+          if (ch === '(') { depth++; i++; continue; }
+          if (ch === ')') {
+            if (depth === 0) { vals.push(stmt.slice(start, i).trim()); break; }
+            depth--; i++; continue;
+          }
+          if (ch === ',' && depth === 0) { vals.push(stmt.slice(start, i).trim()); start = i + 1; }
+          i++;
+        }
+        if (vals.length) rows.push(vals);
+        pos = i + 1;
+      }
+      return rows;
+    }
+
     // Split columns list respecting brackets
     function splitCols(raw) {
       return raw.split(',').map(function(c) { return c.trim().replace(/[\[\]`"]/g, ''); }).filter(Boolean);
     }
 
-    // Parse a single INSERT statement into {type,raw,table,cols,vals}
+    // Parse a single INSERT statement into array of rows (one per VALUES)
+    // Returns array of {type,raw,table,cols,vals} — one per VALUES row
     function parseOneInsert(stmt) {
-      stmt = stmt.replace(/;\s*$/, '').trim();
-      var m = stmt.match(/^INSERT\s+INTO\s+\[?(\w+)\]?\s*\(([^)]+)\)/i);
+      stmt = stmt.replace(/;\s*$/, '').replace(/\bEND\b\s*;?\s*$/i, '').trim();
+      // Handle schema prefix: dbo.table, schema.table, [dbo].[table], etc.
+      var m = stmt.match(/^INSERT\s+INTO\s+(?:\[?[\w]+\]?\.)?\[?([\w]+)\]?\s*\(([^)]+)\)/i);
       if (!m) return null;
       var table = m[1];
       var cols = splitCols(m[2]);
-      var vals = splitValues(stmt);
-      return { type: 'insert', raw: stmt, table: table, cols: cols, vals: vals };
+      // Build clean INSERT prefix without multiple VALUES
+      var insertPrefix = 'INSERT INTO ' + table + ' (' + cols.join(', ') + ')';
+      // Get ALL values rows
+      var allRows = extractAllValuesRows(stmt);
+      if (!allRows.length) return null;
+      // Return one object per VALUES row
+      return allRows.map(function(vals) {
+        return {
+          type: 'insert',
+          raw: insertPrefix + '\n    VALUES (' + vals.join(', ') + ')',
+          table: table,
+          cols: cols,
+          vals: vals
+        };
+      });
     }
 
     // Parse a single ALTER TABLE statement into {type,raw,table}
@@ -2148,8 +2213,15 @@
       var raw = v('iq'), st = g('ist');
       if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one INSERT or ALTER query.'; return; }
 
+      // Pre-process: strip IF NOT EXISTS / BEGIN / END wrappers so we get clean INSERT/ALTER
+      // This handles user pasting full IF NOT EXISTS blocks
+      var cleaned = raw
+        .replace(/IF\s+NOT\s+EXISTS\s*\([^)]*\)\s*/gi, '')  // remove IF NOT EXISTS (...)
+        .replace(/\bBEGIN\b/gi, '')                              // remove BEGIN
+        .replace(/\bEND\s*;?/gi, '');                           // remove END;
+
       // Split input into individual statements on INSERT or ALTER boundaries
-      var parts = raw.split(/(?=\bINSERT\s+INTO\b|\bALTER\s+TABLE\b)/i)
+      var parts = cleaned.split(/(?=\bINSERT\s+INTO\b|\bALTER\s+TABLE\b)/i)
         .map(function(s) { return s.trim(); })
         .filter(function(s) { return /^(INSERT|ALTER)/i.test(s); });
 
@@ -2160,8 +2232,9 @@
         // Strip trailing GO and semicolons, trim
         stmt = stmt.replace(/\bGO\b\s*$/i, '').replace(/;\s*$/, '').trim();
         if (/^INSERT/i.test(stmt)) {
-          var r = parseOneInsert(stmt);
-          if (r) iR.push(r); else fail++;
+          var rows = parseOneInsert(stmt);
+          if (rows && rows.length) { rows.forEach(function(r){ iR.push(r); }); }
+          else fail++;
         } else if (/^ALTER\s+TABLE/i.test(stmt)) {
           var r = parseOneAlter(stmt);
           if (r) iR.push(r); else fail++;
@@ -2232,7 +2305,7 @@
         ')\n' +
         'BEGIN\n' +
         '    ' + insertSql.replace(/\n/g, '\n    ') + ';\n' +
-        'END;';
+        'END;\nGO';
     }
 
     function buildAlterBlock(r) {
