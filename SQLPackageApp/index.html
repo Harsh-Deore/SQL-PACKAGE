@@ -2312,7 +2312,7 @@
       var caseId = v('caseid') || 'XXXXX';
       var backupTable = 'Case_' + caseId + '_Backup_' + r.table;
       var alterSql = r.raw.replace(/;\s*$/, '').trim();
-      return 'SELECT * INTO ' + backupTable + ' FROM ' + r.table + '\nGO\n' + alterSql;
+      return 'SELECT * INTO ' + backupTable + ' FROM ' + r.table + '\n' + alterSql + '\nGO';
     }
 
     function genIA() {
