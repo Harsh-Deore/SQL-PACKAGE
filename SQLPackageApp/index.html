@@ -42,6 +42,9 @@
       --amber-border: #fde68a;
       --shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
       --shadow-md: 0 4px 12px rgba(0, 0, 0, .08), 0 2px 4px rgba(0, 0, 0, .04);
+      --purple: #7c3aed;
+      --purple-bg: #f5f3ff;
+      --purple-border: #ddd6fe;
     }
 
     * {
@@ -212,6 +215,17 @@
       background: var(--blue);
       color: #fff;
       box-shadow: 0 2px 6px rgba(37, 99, 235, .3)
+    }
+
+    .nav-item.ins.on {
+      background: var(--purple-bg);
+      color: var(--purple)
+    }
+
+    .nav-item.ins.on .ni {
+      background: var(--purple);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, .3)
     }
 
     .sidebar-footer {
@@ -873,7 +887,10 @@
           <span class="ni">&#9881;</span> SP / Hook
         </button>
         <button class="nav-item mx" id="n-mixed" onclick="sw('mixed')">
-          <span class="ni">&#9889;</span> Mixed
+          <span class="ni">&#9889;</span> Mixed<br>(Update + Delete)
+        </button>
+        <button class="nav-item ins" id="n-insert" onclick="sw('insert')">
+          <span class="ni">&#10133;</span> Insert / Alter
         </button>
       </nav>
 
@@ -1093,6 +1110,31 @@
         </div>
       </div>
 
+      <!-- INSERT / ALTER -->
+      <div class="pnl" id="p-insert">
+        <div class="card">
+          <div class="sec">INSERT / ALTER Queries</div>
+          <div class="inf">
+            Paste one or more <strong>INSERT</strong> or <strong>ALTER TABLE</strong> statements.<br>
+            <strong>INSERT</strong> → wrapped in <code>IF NOT EXISTS (...) BEGIN ... END;</code> guard.<br>
+            <strong>ALTER TABLE</strong> → prefixed with <code>SELECT * INTO Case_[CaseID]_Backup_[Table]</code> before the alter.
+          </div>
+          <textarea id="iq" rows="10"
+            placeholder="INSERT INTO ACQ_DEALTEMPLATESECTION (sSectionName,hTemplate,iOrder) VALUES ('Address',(SELECT hmy FROM Fund_DealTemplate WHERE sDesc='(New) Apartment'),0);&#10;&#10;-- or --&#10;&#10;ALTER TABLE AcctTree ALTER COLUMN sUser NVARCHAR(MAX)"></textarea>
+          <div class="brow">
+            <button class="btn dk"
+              style="background:var(--purple);border-color:var(--purple);box-shadow:0 2px 8px rgba(124,58,237,.25)"
+              onclick="parseIA()">&#9654;&nbsp; Parse Queries</button>
+            <button class="btn" onclick="clr('insert')">&#8635;&nbsp; Clear</button>
+          </div>
+          <div class="st" id="ist"></div>
+        </div>
+        <div class="card hide" id="icard">
+          <div class="sec">Parsed Rows <em>— review before generating</em></div>
+          <div id="ib"></div>
+        </div>
+      </div>
+
       <!-- OUTPUT -->
       <div class="out-card hide" id="out">
         <div class="out-bar">
@@ -1144,8 +1186,8 @@
   </div>
 
   <script>
-    var mode = 'update', uR = [], dR = [], eP = [], mR = [];
-    var titles = { update: 'Update Package', delete: 'Delete Package', sp: 'SP / Hook Package', mixed: 'Mixed Package' };
+    var mode = 'update', uR = [], dR = [], eP = [], mR = [], iR = [];
+    var titles = { update: 'Update Package', delete: 'Delete Package', sp: 'SP / Hook Package', mixed: 'Mixed Package', insert: 'Insert / Alter Package' };
 
     (function () {
       var d = new Date();
@@ -1459,7 +1501,7 @@
 
     function sw(m) {
       mode = m;
-      ['update', 'delete', 'sp', 'mixed'].forEach(function (x) {
+      ['update', 'delete', 'sp', 'mixed', 'insert'].forEach(function (x) {
         g('p-' + x).classList.toggle('on', x === m);
         g('n-' + x).classList.toggle('on', x === m);
       });
@@ -1467,18 +1509,21 @@
       hide();
       if (m === 'sp') genSP();
       if (m === 'mixed' && mR.length) genM();
+      if (m === 'insert' && iR.length) genIA();
     }
     function regen() {
       if (mode === 'update' && uR.length) genU();
       if (mode === 'delete' && dR.length) genD();
       if (mode === 'sp') genSP();
       if (mode === 'mixed' && mR.length) genM();
+      if (mode === 'insert' && iR.length) genIA();
     }
     function clr(m) {
       if (m === 'update') { g('uq').value = ''; g('ust').innerHTML = ''; g('ucard').classList.add('hide'); uR = []; }
       if (m === 'delete') { g('dq').value = ''; g('dst').innerHTML = ''; g('dcard').classList.add('hide'); dR = []; }
       if (m === 'sp') { g('spc').value = ''; g('spn').value = ''; g('spn').dataset.m = ''; eP = []; reE(); }
       if (m === 'mixed') { g('mq').value = ''; g('mst').innerHTML = ''; g('mcard').classList.add('hide'); mR = []; reM(); }
+      if (m === 'insert') { g('iq').value = ''; g('ist').innerHTML = ''; g('icard').classList.add('hide'); iR = []; }
       hide();
     }
 
@@ -1700,12 +1745,10 @@
       st.innerHTML = '<span class="ok">&#10003; Imported</span> <strong>' + added + '</strong> row(s).';
       g('bulk').value = '';
     }
+    // Splits SP textarea content into pre-CREATE part and CREATE part
     function splitSpCode(code) {
-      // Split code into [preCreate, createBlock]
-      // preCreate = everything before the CREATE OR ALTER line (trimmed)
-      // createBlock = from CREATE OR ALTER to end
-      var m = code.match(/(^[\s\S]*?)(\bCREATE\s+(?:OR\s+ALTER\s+)?(?:PROCEDURE|PROC)\b[\s\S]*)$/i);
-      if (!m) return { pre: '', create: code };
+      var m = code.match(/([\s\S]*?)(\bCREATE\s+(?:OR\s+ALTER\s+)?(?:PROCEDURE|PROC)\b[\s\S]*)$/i);
+      if (!m || !m[1].trim()) return { pre: '', create: code };
       return { pre: m[1].trim(), create: m[2].trim() };
     }
     function genSP() {
@@ -1936,7 +1979,7 @@
           var batchNum = Math.floor(i/size)+1;
           var eb = "\n\n//SQL\n\n";
           batch.forEach(function(p){
-            eb += p.trim() ? "//SQL EXEC "+spn+" "+p.trim()+" //End SQL\n" : "//SQL EXEC "+spn+" //End SQL\n";
+            eb += p.trim() ? "EXEC "+spn+" "+p.trim()+"\n" : "EXEC "+spn+"\n";
           });
           eb += "\n//End SQL";
           var start = i+1, end = Math.min(i+size, filled.length);
@@ -2035,6 +2078,167 @@
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
       st.innerHTML='<span class="ok">&#10003; Downloaded</span> <strong>'+files.length+'</strong> package files as zip.';
+    }
+
+    // ── INSERT / ALTER ──────────────────────────────────────────────────
+
+    // Split VALUES list respecting nested parens/subqueries
+    function splitValues(stmt) {
+      // Find VALUES ( ... )
+      var upper = stmt.toUpperCase();
+      var vIdx = upper.search(/\bVALUES\s*\(/);
+      if (vIdx < 0) return [];
+      var parenStart = stmt.indexOf('(', vIdx + 6);
+      if (parenStart < 0) return [];
+      var vals = [], depth = 0, i = parenStart + 1, start = parenStart + 1;
+      while (i < stmt.length) {
+        var ch = stmt[i];
+        if (ch === '(') { depth++; i++; continue; }
+        if (ch === ')') {
+          if (depth === 0) { vals.push(stmt.slice(start, i).trim()); break; }
+          depth--; i++; continue;
+        }
+        if (ch === ',' && depth === 0) { vals.push(stmt.slice(start, i).trim()); start = i + 1; }
+        i++;
+      }
+      return vals;
+    }
+
+    // Split columns list respecting brackets
+    function splitCols(raw) {
+      return raw.split(',').map(function(c) { return c.trim().replace(/[\[\]`"]/g, ''); }).filter(Boolean);
+    }
+
+    // Parse a single INSERT statement into {type,raw,table,cols,vals}
+    function parseOneInsert(stmt) {
+      stmt = stmt.replace(/;\s*$/, '').trim();
+      var m = stmt.match(/^INSERT\s+INTO\s+\[?(\w+)\]?\s*\(([^)]+)\)/i);
+      if (!m) return null;
+      var table = m[1];
+      var cols = splitCols(m[2]);
+      var vals = splitValues(stmt);
+      return { type: 'insert', raw: stmt, table: table, cols: cols, vals: vals };
+    }
+
+    // Parse a single ALTER TABLE statement into {type,raw,table}
+    function parseOneAlter(stmt) {
+      stmt = stmt.replace(/;\s*$/, '').trim();
+      var m = stmt.match(/^ALTER\s+TABLE\s+\[?(\w+)\]?/i);
+      if (!m) return null;
+      return { type: 'alter', raw: stmt, table: m[1] };
+    }
+
+    function parseIA() {
+      var raw = v('iq'), st = g('ist');
+      if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one INSERT or ALTER query.'; return; }
+
+      // Split input into individual statements on INSERT or ALTER boundaries
+      var parts = raw.split(/(?=\bINSERT\s+INTO\b|\bALTER\s+TABLE\b)/i)
+        .map(function(s) { return s.trim(); })
+        .filter(function(s) { return /^(INSERT|ALTER)/i.test(s); });
+
+      if (!parts.length) { st.innerHTML = '<span class="er">Error</span> No INSERT or ALTER TABLE statements found.'; return; }
+
+      iR = []; var fail = 0;
+      parts.forEach(function(stmt) {
+        // Strip trailing GO and semicolons, trim
+        stmt = stmt.replace(/\bGO\b\s*$/i, '').replace(/;\s*$/, '').trim();
+        if (/^INSERT/i.test(stmt)) {
+          var r = parseOneInsert(stmt);
+          if (r) iR.push(r); else fail++;
+        } else if (/^ALTER\s+TABLE/i.test(stmt)) {
+          var r = parseOneAlter(stmt);
+          if (r) iR.push(r); else fail++;
+        } else { fail++; }
+      });
+
+      if (!iR.length) { st.innerHTML = '<span class="er">Error</span> Could not parse any statements.'; return; }
+      st.innerHTML = '<span class="ok">&#10003; Parsed</span> <strong>' + iR.length + '</strong> statement(s).' +
+        (fail ? ' <span class="er">' + fail + ' failed</span>' : '');
+      reIA(); g('icard').classList.remove('hide'); genIA();
+    }
+
+    function reIA() {
+      var container = g('ib'); container.innerHTML = '';
+      iR.forEach(function(r, i) {
+        var isInsert = r.type === 'insert';
+        var typeBg = isInsert ? 'var(--purple-bg)' : 'var(--amber-bg)';
+        var typeBorder = isInsert ? 'var(--purple-border)' : 'var(--amber-border)';
+        var typeColor = isInsert ? 'var(--purple)' : 'var(--amber)';
+        var typeLabel = isInsert ? 'INSERT' : 'ALTER';
+
+        var div = document.createElement('div');
+        div.className = 'mrow';
+        div.style.cssText = 'border-color:' + typeBorder;
+
+        var headerHtml = '<div class="mh" style="background:' + typeBg + ';border-bottom:1px solid ' + typeBorder + '">' +
+          '<span class="nm">' + (i+1) + '</span>' +
+          '<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + typeColor + '">' + typeLabel + '</span>' +
+          '<span style="font-size:11px;color:var(--text2);font-family:\'Fira Code\',monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + e(r.table) + '</span>' +
+          '<button class="xb" onclick="iR.splice(' + i + ',1);reIA();if(iR.length)genIA();else hide()">&#215;</button>' +
+          '</div>';
+
+        var bodyHtml = '<div class="mb" style="gap:6px">';
+        if (isInsert) {
+          bodyHtml += '<label>Table</label><input type="text" value="' + e(r.table) + '" oninput="iR[' + i + '].table=this.value;genIA()">';
+          bodyHtml += '<label>Columns</label><input type="text" value="' + e(r.cols.join(', ')) + '" oninput="iR[' + i + '].cols=this.value.split(\',\').map(function(c){return c.trim()});genIA()">';
+          bodyHtml += '<label>SQL (editable)</label><textarea rows="4" style="font-size:11px" oninput="iR[' + i + '].raw=this.value;genIA()">' + e(r.raw) + '</textarea>';
+        } else {
+          bodyHtml += '<label>Table (for backup name)</label><input type="text" value="' + e(r.table) + '" oninput="iR[' + i + '].table=this.value;genIA()">';
+          bodyHtml += '<label>ALTER SQL (editable)</label><textarea rows="3" style="font-size:11px" oninput="iR[' + i + '].raw=this.value;genIA()">' + e(r.raw) + '</textarea>';
+        }
+        bodyHtml += '</div>';
+
+        div.innerHTML = headerHtml + bodyHtml;
+        container.appendChild(div);
+      });
+    }
+
+    function buildInsertBlock(r) {
+      // Build WHERE conditions from cols+vals pairing
+      var pairs = [];
+      var cols = Array.isArray(r.cols) ? r.cols : (r.cols || '').split(',').map(function(c){return c.trim();});
+      var vals = Array.isArray(r.vals) ? r.vals : splitValues(r.raw);
+
+      cols.forEach(function(col, idx) {
+        var val = vals[idx];
+        if (val !== undefined && val !== null) {
+          pairs.push('    ' + col + '=' + val);
+        }
+      });
+
+      var whereStr = pairs.join('\n    AND ');
+      var insertSql = r.raw.replace(/;\s*$/, '').trim();
+
+      return 'IF NOT EXISTS (\n' +
+        '    SELECT 1 FROM ' + r.table + '\n' +
+        '    WHERE ' + whereStr + '\n' +
+        ')\n' +
+        'BEGIN\n' +
+        '    ' + insertSql.replace(/\n/g, '\n    ') + ';\n' +
+        'END;';
+    }
+
+    function buildAlterBlock(r) {
+      var caseId = v('caseid') || 'XXXXX';
+      var backupTable = 'Case_' + caseId + '_Backup_' + r.table;
+      var alterSql = r.raw.replace(/;\s*$/, '').trim();
+      return 'SELECT * INTO ' + backupTable + ' FROM ' + r.table + '\nGO\n' + alterSql;
+    }
+
+    function genIA() {
+      if (!iR.length) { hide(); return; }
+      var blocks = '';
+      iR.forEach(function(r) {
+        if (!r.table) return;
+        if (r.type === 'insert') {
+          blocks += buildInsertBlock(r) + '\n\n';
+        } else {
+          blocks += buildAlterBlock(r) + '\n\n';
+        }
+      });
+      if (!blocks.trim()) { hide(); return; }
+      show(notes() + '\n\n//SQL\n\n' + blocks.trimEnd() + '\n\n//End SQL');
     }
 
     // PWA
