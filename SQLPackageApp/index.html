@@ -218,6 +218,16 @@
     }
 
     .nav-item.ins.on {
+      background: #F0FDF4;
+      color: #059669
+    }
+    .nav-item.ins.on .ni {
+      background: #059669;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(5,150,105,.3)
+    }
+
+    .nav-item.ins.on {
       background: var(--purple-bg);
       color: var(--purple)
     }
@@ -1200,10 +1210,14 @@
     function p2(n) { return String(n).padStart(2, '0'); }
 
     // Generate timestamp suffix for backup tables e.g. _20260320_143022
+    var _bkCtr = 0;
     function bkSuffix() {
       var d = new Date();
-      return '_' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+      var base = '_' + d.getFullYear() + p2(d.getMonth()+1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+      _bkCtr++;
+      return base + (_bkCtr > 1 ? '_' + _bkCtr : '');
     }
+    function resetBkCtr() { _bkCtr = 0; }
 
     // wrapVal — decides whether to wrap in quotes or not
     function wrapVal(val) {
@@ -1621,6 +1635,7 @@
       return (whereIdx >= 0 ? stmt.slice(joinIdx, whereIdx) : stmt.slice(joinIdx)).trim();
     }
     function parseD() {
+      resetBkCtr();
       var raw = v('dq'), st = g('dst');
       if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one DELETE query.'; return; }
       var parts = raw.split(/(?=\bDELETE\b)/i).map(function (s) { return s.trim(); }).filter(function (s) { return /^DELETE\b/i.test(s); });
@@ -1772,6 +1787,7 @@
 
     // MIXED
     function parseM() {
+      resetBkCtr();
       var raw = v('mq'), st = g('mst');
       if (!raw) { st.innerHTML = '<span class="er">Error</span> Paste at least one query.'; return; }
       var tokens = raw.split(/(?=\b(?:UPDATE|DELETE)\b)/i).map(function (s) { return s.trim(); }).filter(function (s) { return /^(UPDATE|DELETE)\s/i.test(s); });
