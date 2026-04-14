@@ -2308,13 +2308,20 @@
         'END;\nGO';
     }
 
+    var alterCounter = 1;
+
     function buildAlterBlock(r) {
       var caseId = v('caseid') || 'XXXXX';
-      var backupTable = 'Case_' + caseId + '_Backup_' + r.table;
-      var alterSql = r.raw.replace(/;\s*$/, '').trim();
-      return 'SELECT * INTO ' + backupTable + ' FROM ' + r.table + '\n' + alterSql + '\nGO';
-    }
 
+      var uniqueSuffix = new Date().getTime() + '_' + alterCounter++;
+      var backupTable = 'Case_' + caseId + '_Backup_' + r.table + '_' + uniqueSuffix;
+
+      var alterSql = r.raw.replace(/;\s*$/, '').trim();
+      
+      return 'SELECT * INTO ' + backupTable + ' FROM ' + r.table + '\n' +
+            alterSql + '\nGO';
+    }
+    
     function genIA() {
       if (!iR.length) { hide(); return; }
       var blocks = '';
