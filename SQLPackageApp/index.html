@@ -12,9 +12,7 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f5f3ef;
@@ -40,45 +38,131 @@
       --amber: #d97706;
       --amber-bg: #fffbeb;
       --amber-border: #fde68a;
-      --shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, .08), 0 2px 4px rgba(0, 0, 0, .04);
       --purple: #7c3aed;
       --purple-bg: #f5f3ff;
       --purple-border: #ddd6fe;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,.08), 0 4px 6px rgba(0,0,0,.05);
+      --radius: 12px;
+      --radius-lg: 16px;
+      --sidebar-w: 232px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
+    /* ── DARK MODE — Clean Professional ── */
+    body.dark {
+      --bg: #141517;
+      --surface: #1e2025;
+      --surface2: #25282f;
+      --border: #2e3138;
+      --border2: #3a3e4a;
+      --text: #e4e6eb;
+      --text2: #9ba3af;
+      --text3: #5c6370;
+      --accent: #f97316;
+      --accent-bg: #1f1208;
+      --accent-border: #7c3912;
+      --blue: #60a5fa;
+      --blue-bg: #0d1829;
+      --blue-border: #1e3a6e;
+      --red: #f87171;
+      --red-bg: #1c0f0f;
+      --red-border: #7f1d1d;
+      --green: #34d399;
+      --green-bg: #0a1f14;
+      --green-border: #064e3b;
+      --amber: #fbbf24;
+      --amber-bg: #1c1400;
+      --amber-border: #78350f;
+      --purple: #a78bfa;
+      --purple-bg: #13102a;
+      --purple-border: #3b2d6e;
+      --shadow: 0 1px 3px rgba(0,0,0,.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.4);
     }
+    body.dark footer { background: var(--surface); border-color: var(--border); color: var(--text3); }
+    body.dark .sidebar { background: #16181d; border-right: 1px solid #2e3138; }
+      background: rgba(20,21,23,.92);
+      border-color: #2e3138;
+    }
+    body.dark .sidebar-top { border-color: #2e3138; }
+    body.dark .nav-label { background: #25282f; color: #9ba3af; border-color: #f97316; }
+    body.dark .nav-item:hover { background: #25282f; color: var(--text); }
+    body.dark .nav-item .ni { background: #25282f; }
+    body.dark .card { background: #1e2025; border-color: #2e3138; box-shadow: none; }
+    body.dark .inf { background: #25282f; border-color: #2e3138; color: #9ba3af; }
+    body.dark .inf code { background: #141517; color: #f97316; }
+    body.dark input[type=text], body.dark textarea { background: #25282f; border-color: #3a3e4a; color: #e4e6eb; }
+    body.dark input[type=text]::placeholder, body.dark textarea::placeholder { color: #3a3e4a; }
+    body.dark input[type=text]:focus, body.dark textarea:focus { background: #2a2d35; border-color: #f97316; box-shadow: 0 0 0 3px rgba(249,115,22,.12); }
+    body.dark .btn { background: #25282f; border-color: #3a3e4a; color: #9ba3af; }
+    body.dark .btn:hover { background: #2e3138; color: #e4e6eb; border-color: #4a4f5e; }
+    body.dark .btn.dk { background: #f97316; border-color: #f97316; color: #fff; box-shadow: none; }
+    body.dark .btn.dk:hover { background: #ea6c0a; }
+    body.dark .btn.gn { background: rgba(52,211,153,.08); border-color: #064e3b; color: #34d399; }
+    body.dark .btn.rd { background: rgba(248,113,113,.08); border-color: #7f1d1d; color: #f87171; }
+    body.dark .out-card { box-shadow: none; border-color: #2e3138; }
+    body.dark .out-bar { background: #25282f; border-color: #2e3138; }
+    body.dark .out-fn { color: #5c6370; }
+    body.dark .out-pre, body.dark #preEdit { background: #141517; color: #abb2bf; }
+    body.dark .fmt-pre { background: #141517; color: #abb2bf; }
+    body.dark .page-title { color: var(--text); -webkit-text-fill-color: var(--text); }
+    body.dark .page-title { color: #e4e6eb; -webkit-text-fill-color: #e4e6eb; }
+    body.dark .page-sub { color: #5c6370; }
+    body.dark .sec { color: #5c6370; }
+    body.dark .ok { background: rgba(52,211,153,.1); border-color: #064e3b; color: #34d399; }
+    body.dark .er { background: rgba(248,113,113,.1); border-color: #7f1d1d; color: #f87171; }
+    body.dark .nm { background: #25282f; border-color: #3a3e4a; color: #5c6370; }
+    body.dark .mrow { border-color: #2e3138; box-shadow: none; }
+    body.dark .mh { border-color: #2e3138 !important; }
+    body.dark .mb { background: #1e2025; }
+    body.dark .qt th { border-color: #2e3138; color: #5c6370; }
+    body.dark .qt td { border-color: #2e3138; }
+    body.dark .drop-zone { background: #25282f; border-color: #3a3e4a; }
+    body.dark .drop-zone:hover, body.dark .drop-zone.drag { background: #1f1208; border-color: #f97316; }
+    body.dark .diff-out { background: #1e2025; border-color: #2e3138; }
+    body.dark .diff-head { background: #25282f; border-color: #2e3138; color: #5c6370; }
+    body.dark .diff-line.eq { color: #9ba3af; }
+    body.dark .diff-line.rem { background: #1c0f0f; color: #f87171; border-left-color: #f87171; }
+    body.dark .diff-line.add { background: #0a1f14; color: #34d399; border-left-color: #34d399; }
+    body.dark .diff-line.mod  { background: #1c1400; color: var(--text); border-left-color: #fbbf24; }
+    body.dark .diff-line.mod2 { background: #0c1a3a; color: var(--text); border-left-color: #60a5fa; }
+    body.dark mark.hl-rem { background: #7f1d1d; color: #fca5a5; }
+    body.dark mark.hl-add { background: #064e3b; color: #6ee7b7; }
+    body.dark .modal { background: #1e2025; border-color: #2e3138; }
+    body.dark .modal-bg { background: rgba(0,0,0,.6); }
+    body.dark .install-btn { background: #25282f; border-color: #3a3e4a; color: #9ba3af; }
+    body.dark .install-btn:hover { border-color: var(--accent); color: var(--accent); }
+    body.dark ::-webkit-scrollbar-thumb { background: #3a3e4a; }
+    body.dark ::-webkit-scrollbar-thumb:hover { background: #4a4f5e; }
+    body.dark #dmBtn { background: #25282f; border-color: #3a3e4a; color: #9ba3af; }
+    body.dark #dmBtn:hover { background: #2e3138; border-color: #4a4f5e; color: #e4e6eb; }
+    body.dark #dmIcon { background: #141517; }
+    body.dark #dryRunCard { border-color: var(--blue-border); }
+    body.dark #dryPre { color: #93c5fd; background: #0c1a3a; }
+    body.dark #dryRunCard .out-bar { background: #0c1a3a; border-color: var(--blue-border); }
+    body.dark #explainText { background: #25282f; border-color: #2e3138; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── SIDEBAR LAYOUT ── */
-    .layout {
-      display: flex;
-      min-height: 100vh
-    }
+    .layout { display: flex; min-height: 100vh; }
 
-    /* Sidebar */
+    /* ── SIDEBAR ── */
     .sidebar {
-      width: 220px;
-      flex-shrink: 0;
+      width: 220px; flex-shrink: 0;
       background: var(--surface);
       border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      z-index: 100;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0;
+      height: 100vh; z-index: 100;
     }
 
     .sidebar-top {
@@ -86,287 +170,141 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
+    .brand { display: flex; align-items: center; gap: 10px; }
 
     .brand-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 36px; height: 36px; border-radius: 10px;
       background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      color: #fff;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(232, 93, 38, .35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: #fff; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(232,93,38,.35);
     }
 
     .brand-name {
       font-family: 'Playfair Display', serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
+      font-size: 17px; font-weight: 700;
+      color: var(--text); line-height: 1.2;
     }
 
-    .brand-sub {
-      font-size: 10px;
-      color: var(--text3);
-      margin-top: 1px
-    }
+    .brand-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
 
-    /* Nav */
-    .nav {
-      padding: .8rem .8rem;
-      flex: 1
-    }
+    /* ── NAV ── */
+    .nav { padding: .8rem .8rem; flex: 1; overflow-y: auto; }
 
     .nav-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      padding: 0 .4rem;
-      margin-bottom: .4rem;
-      margin-top: .6rem;
+      font-size: 10px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: .1em;
+      padding: 5px 8px;
+      margin-bottom: .4rem; margin-top: .6rem;
+      display: block;
+      background: var(--surface2);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent);
+      color: var(--text2);
     }
 
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text2);
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
-      transition: all .15s;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 500;
+      color: var(--text2); border: none; background: none;
+      width: 100%; text-align: left;
+      transition: all .15s; font-family: 'Plus Jakarta Sans', sans-serif;
       margin-bottom: 2px;
     }
 
-    .nav-item:hover {
-      background: var(--bg);
-      color: var(--text)
-    }
-
-    .nav-item.on {
-      background: var(--accent-bg);
-      color: var(--accent);
-      font-weight: 600
-    }
+    .nav-item:hover { background: var(--bg); color: var(--text); }
+    .nav-item.on { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
 
     .nav-item .ni {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      flex-shrink: 0;
-      background: var(--bg);
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0; background: var(--bg);
     }
 
-    .nav-item.on .ni {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(232, 93, 38, .3)
-    }
+    .nav-item.on .ni { background: var(--accent); color: #fff; box-shadow: 0 2px 6px rgba(232,93,38,.3); }
+    .nav-item.del.on { background: var(--red-bg); color: var(--red); }
+    .nav-item.del.on .ni { background: var(--red); box-shadow: 0 2px 6px rgba(220,38,38,.3); }
+    .nav-item.sp.on { background: var(--amber-bg); color: var(--amber); }
+    .nav-item.sp.on .ni { background: var(--amber); color: #fff; box-shadow: 0 2px 6px rgba(217,119,6,.3); }
+    .nav-item.mx.on { background: var(--blue-bg); color: var(--blue); }
+    .nav-item.mx.on .ni { background: var(--blue); color: #fff; box-shadow: 0 2px 6px rgba(37,99,235,.3); }
+    .nav-item.ins.on { background: var(--purple-bg); color: var(--purple); }
+    .nav-item.ins.on .ni { background: var(--purple); color: #fff; box-shadow: 0 2px 6px rgba(124,58,237,.3); }
 
-    .nav-item.del.on {
-      background: var(--red-bg);
-      color: var(--red)
-    }
-
-    .nav-item.del.on .ni {
-      background: var(--red);
-      box-shadow: 0 2px 6px rgba(220, 38, 38, .3)
-    }
-
-    .nav-item.sp.on {
-      background: var(--amber-bg);
-      color: var(--amber)
-    }
-
-    .nav-item.sp.on .ni {
-      background: var(--amber);
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(217, 119, 6, .3)
-    }
-
-    .nav-item.mx.on {
-      background: var(--blue-bg);
-      color: var(--blue)
-    }
-
-    .nav-item.mx.on .ni {
-      background: var(--blue);
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, .3)
-    }
-
-    .nav-item.ins.on {
-      background: #F0FDF4;
-      color: #059669
-    }
-    .nav-item.ins.on .ni {
-      background: #059669;
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(5,150,105,.3)
-    }
-
-    .nav-item.ins.on {
-      background: var(--purple-bg);
-      color: var(--purple)
-    }
-
-    .nav-item.ins.on .ni {
-      background: var(--purple);
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(124, 58, 237, .3)
-    }
-
-    .sidebar-footer {
-      padding: 1rem;
-      border-top: 1px solid var(--border);
-    }
+    .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); }
 
     .install-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      padding: 9px;
-      font-size: 12px;
-      font-weight: 500;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid var(--border2);
-      background: var(--surface2);
-      color: var(--text2);
-      transition: all .15s;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 9px; font-size: 12px; font-weight: 500;
+      border-radius: 8px; cursor: pointer;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--text2); transition: all .15s; font-family: 'Plus Jakarta Sans', sans-serif;
     }
+    .install-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
 
-    .install-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-bg)
-    }
-
-    /* Main content */
+    /* ── MAIN ── */
     .main {
-      margin-left: 220px;
-      flex: 1;
-      padding: 2rem 2rem;
-      max-width: calc(100vw - 220px);
+      margin-left: 220px; flex: 1;
+      padding: 2rem; max-width: calc(100vw - 220px);
     }
 
-    /* Page header */
+    /* ── PAGE HEADER ── */
     .page-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 1.5rem;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; flex-wrap: wrap;
+      gap: 12px; margin-bottom: 1.5rem;
     }
 
     .page-title {
       font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text);
+      font-size: 26px; font-weight: 700; color: var(--text);
     }
 
-    .page-sub {
-      font-size: 13px;
-      color: var(--text3);
-      margin-top: 3px
-    }
+    .page-sub { font-size: 13px; color: var(--text3); margin-top: 3px; }
 
     .mode-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: 99px;
-      font-size: 12px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 600;
     }
 
-    /* Cards */
+    /* ── CARDS ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.4rem 1.6rem;
-      margin-bottom: 1rem;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: .875rem;
       box-shadow: var(--shadow);
+      transition: box-shadow .2s;
     }
 
     .sec {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: .08em;
+      font-size: 11px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: .08em;
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 6px;
     }
-
     .sec em {
-      font-size: 12px;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: 0;
-      color: var(--text3);
-      font-style: normal;
+      font-size: 12px; font-weight: 400; text-transform: none;
+      letter-spacing: 0; color: var(--text3); font-style: normal;
     }
 
-    /* Grid */
-    .g2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px
-    }
+    /* ── GRID ── */
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:700px) { .g2 { grid-template-columns: 1fr; } }
 
-    @media(max-width:700px) {
-      .g2 {
-        grid-template-columns: 1fr
-      }
-    }
-
-    /* Form fields */
+    /* ── FORM FIELDS ── */
     label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text2);
-      display: block;
-      margin-bottom: 5px
+      font-size: 11px; font-weight: 600; color: var(--text2);
+      display: block; margin-bottom: 5px;
     }
 
-    input[type=text],
-    textarea {
+    input[type=text], textarea {
       width: 100%;
       font-family: 'Fira Code', monospace;
-      font-size: 13px;
-      padding: 9px 11px;
+      font-size: 12.5px;
+      padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
       background: var(--surface2);
@@ -374,239 +312,107 @@
       outline: none;
       transition: border-color .15s, box-shadow .15s;
     }
-
-    input[type=text]:focus,
-    textarea:focus {
+    input[type=text]:focus, textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(232, 93, 38, .1);
+      box-shadow: 0 0 0 3px rgba(232,93,38,.1);
       background: var(--surface);
     }
+    input[type=text]::placeholder, textarea::placeholder { color: var(--text3); }
+    textarea { resize: vertical; font-size: 12.5px; line-height: 1.65; }
 
-    input[type=text]::placeholder,
-    textarea::placeholder {
-      color: var(--text3)
-    }
-
-    textarea {
-      resize: vertical;
-      font-size: 12.5px;
-      line-height: 1.6
-    }
-
-    /* Buttons */
+    /* ── BUTTONS ── */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid var(--border2);
-      background: var(--surface);
-      color: var(--text2);
-      transition: all .15s;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; font-size: 13px; font-weight: 600;
+      border-radius: 9px; cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--text2);
+      transition: all .15s; font-family: 'Plus Jakarta Sans', sans-serif;
       box-shadow: var(--shadow);
     }
-
-    .btn:hover {
-      background: var(--bg);
-      border-color: var(--border2);
-      color: var(--text)
-    }
-
-    .btn:active {
-      transform: scale(.98)
-    }
+    .btn:hover { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+    .btn:active { transform: scale(.98); }
 
     .btn.dk {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-      box-shadow: 0 2px 8px rgba(232, 93, 38, .3)
+      background: var(--accent); color: #fff; border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(232,93,38,.3);
     }
+    .btn.dk:hover { background: #d44e1e; box-shadow: 0 4px 12px rgba(232,93,38,.4); }
 
-    .btn.dk:hover {
-      background: #d44e1e;
-      box-shadow: 0 4px 12px rgba(232, 93, 38, .4)
-    }
+    .btn.gn { background: var(--green-bg); color: var(--green); border-color: var(--green-border); font-weight: 600; }
+    .btn.gn:hover { background: #d1fae5; }
+    .btn.rd { color: var(--red); border-color: var(--red-border); background: var(--red-bg); }
+    .btn.rd:hover { background: #ffe0e0; }
 
-    .btn.gn {
-      background: var(--green-bg);
-      color: var(--green);
-      border-color: var(--green-border)
-    }
-
-    .btn.gn:hover {
-      background: #d1fae5
-    }
-
-    .btn.rd {
-      color: var(--red);
-      border-color: var(--red-border);
-      background: var(--red-bg)
-    }
-
-    .btn.rd:hover {
-      background: #fee2e2
-    }
-
-    .brow {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px
-    }
+    .brow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 
     .xb {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      font-size: 16px;
-      padding: 2px 5px;
-      border-radius: 4px;
-      transition: all .15s;
-      line-height: 1
+      background: none; border: none; color: var(--text3);
+      cursor: pointer; font-size: 16px; padding: 2px 5px;
+      border-radius: 4px; transition: all .15s; line-height: 1;
     }
+    .xb:hover { color: var(--red); background: var(--red-bg); }
 
-    .xb:hover {
-      color: var(--red);
-      background: var(--red-bg)
-    }
-
-    /* Status */
-    .st {
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--text2);
-      min-height: 18px
-    }
+    /* ── STATUS ── */
+    .st { margin-top: 10px; font-size: 12px; color: var(--text2); min-height: 18px; }
 
     .ok {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--green-bg);
-      color: var(--green);
-      margin-right: 4px;
-      border: 1px solid var(--green-border)
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 11px; font-weight: 700;
+      background: var(--green-bg); color: var(--green);
+      margin-right: 4px; border: 1px solid var(--green-border);
     }
-
     .er {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--red-bg);
-      color: var(--red);
-      margin-right: 4px;
-      border: 1px solid var(--red-border)
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 11px; font-weight: 700;
+      background: var(--red-bg); color: var(--red);
+      margin-right: 4px; border: 1px solid var(--red-border);
     }
 
-    /* Info */
+    /* ── INFO ── */
     .inf {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 13px;
-      font-size: 12px;
-      color: var(--text2);
-      line-height: 1.7;
-      margin-bottom: 14px
+      background: #fff8f8; border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 13px;
+      font-size: 12.5px; color: var(--text2); line-height: 1.7; margin-bottom: 14px;
     }
-
-    .inf strong {
-      color: var(--text)
-    }
-
+    .inf strong { color: var(--text); }
     .inf code {
-      background: var(--bg);
-      padding: 1px 5px;
-      border-radius: 4px;
-      font-family: 'Fira Code', monospace;
-      font-size: 11px;
-      color: var(--accent)
+      background: var(--bg); padding: 1px 5px; border-radius: 4px;
+      font-family: 'Fira Code', monospace; font-size: 11px; color: var(--accent);
     }
 
-    /* Tables */
-    .qt {
-      width: 100%;
-      border-collapse: collapse
-    }
-
+    /* ── TABLES ── */
+    .qt { width: 100%; border-collapse: collapse; }
     .qt th {
-      font-size: 10px;
-      color: var(--text3);
-      font-weight: 600;
-      text-align: left;
-      padding: 0 8px 10px;
+      font-size: 10px; color: var(--text3); font-weight: 700;
+      text-align: left; padding: 0 8px 10px;
       border-bottom: 1px solid var(--border);
-      text-transform: uppercase;
-      letter-spacing: .06em
+      text-transform: uppercase; letter-spacing: .06em;
     }
-
     .qt td {
-      padding: 5px 8px;
-      vertical-align: middle;
-      border-bottom: 1px solid rgba(0, 0, 0, .03)
+      padding: 6px 8px; vertical-align: middle;
+      border-bottom: 1px solid rgba(0,0,0,.03);
     }
-
-    .qt tr:last-child td {
-      border-bottom: none
-    }
-
-    .qt td input[type=text] {
-      font-size: 12px;
-      padding: 6px 8px
-    }
+    .qt tr:last-child td { border-bottom: none; }
+    .qt td input[type=text] { font-size: 12px; padding: 6px 8px; }
 
     .nm {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text3);
-      font-family: 'Fira Code', monospace
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      font-size: 11px; font-weight: 700; color: var(--text3);
+      font-family: 'Fira Code', monospace;
     }
 
-    /* Mixed rows */
+    /* ── MIXED ROWS ── */
     .mrow {
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 10px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow)
+      border-radius: 12px; overflow: hidden; margin-bottom: 10px;
+      border: 1.5px solid var(--border); box-shadow: var(--shadow);
     }
-
-    .mh {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px
-    }
-
-    .mb {
-      padding: 10px 12px;
-      background: var(--surface);
-      display: grid;
-      gap: 8px
-    }
+    .mh { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
+    .mb { padding: 10px 12px; background: var(--surface); display: grid; gap: 8px; }
 
     .mb label {
       font-size: 11px;
@@ -848,6 +654,78 @@
       }
     }
 
+    /* Tool nav items */
+    .nav-item.tool.on { background: var(--purple-bg); color: var(--purple); }
+    .nav-item.tool.on .ni { background: var(--purple); color: #fff; box-shadow: 0 2px 6px rgba(124,58,237,.3); }
+
+    /* Diff viewer */
+    .diff-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:800px) { .diff-wrap { grid-template-columns: 1fr; } }
+    .diff-out { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .diff-head { padding: 8px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text3); display: flex; align-items: center; gap: 8px; }
+    .diff-body { padding: 0; max-height: 400px; overflow-y: auto; font-family: 'Fira Code', monospace; font-size: 12px; line-height: 1.7; }
+    .diff-line { padding: 2px 14px; white-space: pre-wrap; word-break: break-all; }
+    .diff-line.add { background: #ecfdf5; color: #065f46; border-left: 3px solid #10b981; }
+    .diff-line.rem { background: #fff5f5; color: #991b1b; border-left: 3px solid #ef4444; }
+    .diff-line.eq  { color: var(--text2); border-left: 3px solid transparent; }
+    .diff-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .diff-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+    .diff-pill.add { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .diff-pill.rem { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+    .diff-pill.eq  { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+    /* Screenshot tool */
+    .drop-zone { border: 2px dashed var(--border2); border-radius: 12px; padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all .2s; background: var(--surface2); position: relative; }
+    .drop-zone:hover, .drop-zone.drag { border-color: var(--accent); background: var(--accent-bg); }
+    .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-zone-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .drop-zone-text { font-size: 14px; font-weight: 500; color: var(--text2); }
+    .drop-zone-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+    .preview-img { max-width: 100%; max-height: 240px; border-radius: 10px; border: 1px solid var(--border); margin-top: 12px; display: block; }
+
+    /* Formatter */
+    .fmt-pre { background: var(--surface); padding: 1.2rem 1.4rem; font-family: 'Fira Code', monospace; font-size: 12.5px; line-height: 1.7; white-space: pre; overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 0 0 12px 12px; color: #3d3530; }
+
+    /* Quick Edit */
+    .qe-pre { padding: 1.4rem 1.6rem; font-family: 'Fira Code', monospace; font-size: 12.5px; color: #3d3530; white-space: pre; overflow-x: auto; line-height: 1.7; max-height: 500px; overflow-y: auto; background: var(--surface); border: none; width: 100%; resize: vertical; outline: none; border-radius: 0 0 12px 12px; }
+    .qe-pre:focus { box-shadow: inset 0 0 0 2px rgba(232,93,38,.15); }
+
+    .diff-line.mod  { background: #fffdf5; color: #2d2a26; border-left: 3px solid #f59e0b; }
+    .diff-line.mod2 { background: #f7fffe; color: #2d2a26; border-left: 3px solid #3b82f6; }
+    .diff-line.ghost{ background: transparent; border-left: 3px solid transparent; color: transparent; user-select:none; }
+    .diff-line.eq   { color: #3d3530; }
+    .diff-line.rem  { color: #7f1d1d; }
+    .diff-line.add  { color: #064e3b; }
+    mark.hl-rem { background: #fca5a5; color: #7f1d1d; border-radius: 3px; padding: 0 1px; font-style: normal; }
+    mark.hl-add { background: #6ee7b7; color: #064e3b; border-radius: 3px; padding: 0 1px; font-style: normal; }
+    .diff-pill.chg { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+    /* Feedback tabs */
+    .fb-tab {
+      flex: 1; padding: 9px 8px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all .15s;
+      border: 1.5px solid var(--border2); background: var(--surface2); color: var(--text2);
+    }
+    .fb-tab.fb-tab-active.feedback-active {
+      border-color: var(--accent); background: var(--accent-bg); color: var(--accent);
+    }
+    .fb-tab.fb-tab-active.suggestion-active {
+      border-color: var(--purple); background: var(--purple-bg); color: var(--purple);
+    }
+
+    /* Feedback stars */
+    .fb-star {
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--border2);
+      transition: color .15s, transform .15s;
+      user-select: none;
+      line-height: 1;
+    }
+    .fb-star:hover, .fb-star.active { color: #f59e0b; transform: scale(1.15); }
+    body.dark .fb-star { color: #3a3e4a; }
+    body.dark .fb-star:hover, body.dark .fb-star.active { color: #fbbf24; }
+
     /* Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
@@ -876,7 +754,19 @@
     <aside class="sidebar">
       <div class="sidebar-top">
         <div class="brand">
-          <div class="brand-icon">&#128230;</div>
+          <div class="brand-icon" style="padding:0;overflow:hidden;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;flex-shrink:0;box-shadow:0 3px 10px rgba(232,93,38,.2);border:1.5px solid var(--accent-border)">
+            <svg width="42" height="42" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="18,4 30,11 30,25 18,32 6,25 6,11" fill="none" stroke="#e85d26" stroke-width="2"/>
+              <polygon points="18,8 26,13 26,23 18,28 10,23 10,13" fill="#e85d26" opacity="0.15"/>
+              <text x="18" y="23" font-family="monospace" font-size="14" font-weight="900" fill="#e85d26" text-anchor="middle">S</text>
+              <line x1="30" y1="18" x2="34" y2="18" stroke="#e85d26" stroke-width="1.2" opacity="0.8"/>
+              <circle cx="35" cy="18" r="1.2" fill="#e85d26"/>
+              <line x1="6" y1="18" x2="2" y2="18" stroke="#e85d26" stroke-width="1.2" opacity="0.8"/>
+              <circle cx="1" cy="18" r="1.2" fill="#e85d26"/>
+              <circle cx="30" cy="9" r="1.8" fill="#e85d26"/>
+              <circle cx="30" cy="9" r="3.5" fill="none" stroke="#e85d26" stroke-width="0.8" opacity="0.4"/>
+            </svg>
+          </div>
           <div>
             <div class="brand-name">SQL Packager</div>
             <div class="brand-sub">Data fix generator</div>
@@ -885,8 +775,7 @@
       </div>
 
       <nav class="nav">
-        <div class="nav-label">Package Type</div>
-
+        <div class="nav-label">📦&nbsp; Package Type</div>
         <button class="nav-item on" id="n-update" onclick="sw('update')">
           <span class="ni">&#9998;</span> Update
         </button>
@@ -902,8 +791,25 @@
         <button class="nav-item ins" id="n-insert" onclick="sw('insert')">
           <span class="ni">&#10133;</span> Insert / Alter
         </button>
+
+        <div class="nav-label" style="margin-top:10px;border-left-color:var(--purple)">🛠️&nbsp; Tools</div>
+        <button class="nav-item" id="n-screenshot" onclick="sw('screenshot')">
+          <span class="ni">&#128247;</span> Screenshot → SQL
+        </button>
+        <button class="nav-item" id="n-compare" onclick="sw('compare')">
+          <span class="ni">&#128270;</span> SQL Compare
+        </button>
+        <button class="nav-item" id="n-format" onclick="sw('format')">
+          <span class="ni">&#10024;</span> SQL Formatter
+        </button>
       </nav>
 
+      <div style="padding:.8rem;border-top:1px solid var(--border);margin-top:auto;display:flex;flex-direction:column;gap:6px">
+        <button id="dmBtn" onclick="toggleDark()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s">
+          <span style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--bg);flex-shrink:0" id="dmIcon">🌙</span>
+          <span id="dmLabel">Dark Mode</span>
+        </button>
+      </div>
 
     </aside>
 
@@ -913,13 +819,12 @@
       <!-- Page header -->
       <div class="page-header">
         <div>
-          <div class="page-title" id="pageTitle">Update Package</div>
-          <div class="page-sub">Fill client details, paste your queries, download .pkg</div>
+          <div class="page-title" id="pageTitle">✏️ Update Package</div>
         </div>
       </div>
 
       <!-- CLIENT DETAILS -->
-      <div class="card">
+      <div class="card" id="clientCard">
         <div class="sec">Client Details</div>
         <div class="g2">
           <div><label>Client Pin</label><input type="text" id="pin" placeholder="100030769" oninput="regen()"></div>
@@ -1145,6 +1050,106 @@
         </div>
       </div>
 
+      <!-- SCREENSHOT → SQL -->
+      <div class="pnl" id="p-screenshot">
+        <div class="card">
+          <div class="sec">📸 Screenshot → SQL <em>— AI-powered OCR via Claude Vision</em></div>
+          <div class="inf">
+            Upload or paste a screenshot of SQL queries (from SSMS, DataGrip, Notepad, etc).
+            Claude Vision will extract all SQL statements from the image.
+          </div>
+          <div class="drop-zone" id="dropZone" onclick="document.getElementById('ssFile').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleSsDrop(event)">
+            <input type="file" id="ssFile" accept="image/*" onchange="handleSsFile(this.files[0])" style="display:none">
+            <div class="drop-zone-icon">📷</div>
+            <div class="drop-zone-text">Click to upload or drag & drop screenshot here</div>
+            <div class="drop-zone-sub">PNG, JPG, WEBP supported</div>
+          </div>
+          <div id="ssPreviewWrap" style="display:none">
+            <img id="ssPreview" class="preview-img" alt="Preview">
+          </div>
+          <div class="brow">
+            <button class="btn dk" onclick="runSsOcr()" id="ssBtn" style="display:none">&#9654;&nbsp; Extract SQL from Image</button>
+            <button class="btn" onclick="clearSs()" id="ssClear" style="display:none">&#8635;&nbsp; Clear</button>
+          </div>
+          <div class="st" id="ssSt"></div>
+        </div>
+        <div class="card hide" id="ssResult">
+          <div class="sec">Extracted SQL <em>— review and send to a package tab</em></div>
+          <div id="ssExtracted" style="margin-bottom:12px">
+            <textarea id="ssSql" rows="10" style="font-size:12.5px"></textarea>
+          </div>
+          <div class="brow">
+            <button class="btn" onclick="ssSendTo('update')" style="color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg)">→ Send to Update</button>
+            <button class="btn" onclick="ssSendTo('delete')" style="color:var(--red);border-color:var(--red-border);background:var(--red-bg)">→ Send to Delete</button>
+            <button class="btn" onclick="ssSendTo('mixed')" style="color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)">→ Send to Mixed</button>
+            <button class="btn" onclick="ssSendTo('insert')" style="color:var(--purple);border-color:var(--purple-border);background:var(--purple-bg)">→ Send to Insert/Alter</button>
+            <button class="btn" onclick="ssSendTo('sp')" style="color:var(--amber);border-color:var(--amber-border);background:var(--amber-bg)">→ Send to SP/Hook</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SQL COMPARE -->
+      <div class="pnl" id="p-compare">
+        <div class="card">
+          <div class="sec">🕵️ SQL Compare <em>— side-by-side diff</em></div>
+          <div class="inf">Paste two SQL scripts to compare. Differences are highlighted line-by-line.</div>
+          <div class="diff-wrap" style="margin-bottom:12px">
+            <div>
+              <label>Version A (Original)</label>
+              <textarea id="cmpA" rows="8" placeholder="Paste original SQL here..." oninput="runCompare()"></textarea>
+            </div>
+            <div>
+              <label>Version B (Modified)</label>
+              <textarea id="cmpB" rows="8" placeholder="Paste modified SQL here..." oninput="runCompare()"></textarea>
+            </div>
+          </div>
+          <div class="brow">
+            <button class="btn dk" onclick="runCompare()">&#9654;&nbsp; Compare</button>
+            <button class="btn" onclick="g('cmpA').value='';g('cmpB').value='';g('cmpOut').innerHTML='';g('cmpSum').innerHTML=''">&#8635;&nbsp; Clear</button>
+          </div>
+        </div>
+        <div class="card hide" id="cmpCard">
+          <div class="sec">Diff Result</div>
+          <div id="cmpSum" class="diff-summary"></div>
+          <div style="margin-top:12px" class="diff-wrap">
+            <div class="diff-out">
+              <div class="diff-head">&#128308; Version A</div>
+              <div class="diff-body" id="cmpOutA"></div>
+            </div>
+            <div class="diff-out">
+              <div class="diff-head">&#128994; Version B</div>
+              <div class="diff-body" id="cmpOutB"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SQL FORMATTER -->
+      <div class="pnl" id="p-format">
+        <div class="card">
+          <div class="sec">✨ SQL Formatter <em>— beautify any SQL</em></div>
+          <div class="inf">Paste any SQL (UPDATE, DELETE, INSERT, SELECT, SP…). Choose a style and get clean, readable output.</div>
+          <textarea id="fmtIn" rows="8" placeholder="Paste SQL to format..."></textarea>
+          <div class="brow">
+            <button class="btn dk" onclick="runFormat()">&#10024;&nbsp; Format SQL</button>
+            <button class="btn" onclick="g('fmtIn').value='';g('fmtCard').classList.add('hide')">&#8635;&nbsp; Clear</button>
+          </div>
+        </div>
+        <div class="card hide" id="fmtCard">
+          <div class="sec">Formatted Output</div>
+          <div class="out-card" style="margin:0">
+            <div class="out-bar" style="padding:.7rem 1.2rem">
+              <div class="out-bar-left"><div class="out-dots"><span></span><span></span><span></span></div><span class="out-fn">formatted.sql</span></div>
+              <div style="display:flex;gap:8px">
+                <span class="cpd" id="fmtCpd">&#10003;&nbsp; Copied!</span>
+                <button class="btn" onclick="doFmtCopy()" style="padding:6px 12px;font-size:12px">&#128203;&nbsp; Copy</button>
+              </div>
+            </div>
+            <pre class="fmt-pre" id="fmtOut"></pre>
+          </div>
+        </div>
+      </div>
+
       <!-- OUTPUT -->
       <div class="out-card hide" id="out">
         <div class="out-bar">
@@ -1152,17 +1157,67 @@
             <div class="out-dots"><span></span><span></span><span></span></div>
             <span class="out-fn" id="outfn">package.pkg</span>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <span class="cpd" id="cpd">&#10003;&nbsp; Copied!</span>
+            <button class="btn" onclick="doExplain()" style="padding:6px 14px;font-size:12px;color:var(--purple);border-color:var(--purple-border);background:var(--purple-bg)">&#129504;&nbsp; Explain</button>
+            <button class="btn" id="dryRunBtn" onclick="toggleDryRun()" style="padding:6px 14px;font-size:12px;color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)">&#128257;&nbsp; Dry Run</button>
+            <button class="btn" id="editToggleBtn" onclick="toggleEdit()" style="padding:6px 14px;font-size:12px">&#9998;&nbsp; Edit</button>
             <button class="btn" onclick="doCopy()" style="padding:6px 14px;font-size:12px">&#128203;&nbsp; Copy</button>
-            <button class="btn gn" onclick="doDl()" style="padding:6px 14px;font-size:12px">&#8595;&nbsp; Download
-              .pkg</button>
+            <button class="btn gn" onclick="doDl()" style="padding:6px 14px;font-size:12px">&#8595;&nbsp; Download .pkg</button>
           </div>
         </div>
+        <!-- read-only view -->
         <pre class="out-pre" id="pre"></pre>
+        <!-- editable textarea, hidden by default -->
+        <textarea class="out-pre" id="preEdit" style="display:none;resize:vertical;border:none;border-top:2px solid var(--accent);border-radius:0;outline:none;width:100%;box-sizing:border-box;background:var(--surface);color:#3d3530;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.7;padding:1.4rem 1.6rem;" rows="20" oninput="syncEdit()"></textarea>
+      </div>
+
+      <!-- DRY RUN OUTPUT -->
+      <div class="out-card hide" id="dryRunCard" style="border:2px solid var(--blue-border)">
+        <div class="out-bar" style="background:var(--blue-bg);border-color:var(--blue-border)">
+          <div class="out-bar-left">
+            <div class="out-dots"><span style="background:#60a5fa"></span><span style="background:#60a5fa"></span><span style="background:#60a5fa"></span></div>
+            <span class="out-fn" style="color:var(--blue)">&#128257; dry_run.sql — SELECT preview only, no changes made</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="cpd" id="dryCpd">&#10003;&nbsp; Copied!</span>
+            <button class="btn" onclick="doDryCopy()" style="padding:6px 14px;font-size:12px;color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)">&#128203;&nbsp; Copy SELECTs</button>
+            <button class="btn" onclick="toggleDryRun()" style="padding:6px 14px;font-size:12px">&#10005;&nbsp; Close</button>
+          </div>
+        </div>
+        <pre class="out-pre" id="dryPre" style="color:#1e40af"></pre>
+      </div>
+
+      <!-- EXPLAIN MODAL -->
+      <div class="modal-bg" id="explainModal" onclick="if(event.target===this)closeExplain()">
+        <div class="modal" style="max-width:580px;width:100%">
+          <button onclick="closeExplain()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">&#215;</button>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <span style="font-size:24px">🧠</span>
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Package Explained</div>
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:1.2rem">Plain English summary of what this package does</div>
+          <!-- loading state -->
+          <div id="explainLoading" style="display:none;text-align:center;padding:2rem 0">
+            <div style="font-size:2rem;margin-bottom:12px" id="explainSpinner">⏳</div>
+            <div style="font-size:13px;color:var(--text3)" id="explainLoadTxt">Reading your package...</div>
+          </div>
+          <!-- result -->
+          <div id="explainResult" style="display:none">
+            <!-- summary badge row -->
+            <div id="explainBadges" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem"></div>
+            <!-- main explanation -->
+            <div id="explainText" style="font-size:13.5px;color:var(--text2);line-height:1.8;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem"></div>
+            <!-- risk -->
+            <div id="explainRisk" style="font-size:12px;border-radius:8px;padding:8px 12px;border:1px solid"></div>
+          </div>
+          <!-- error -->
+          <div id="explainErr" style="display:none;font-size:13px;color:var(--red);padding:1rem;background:var(--red-bg);border:1px solid var(--red-border);border-radius:8px"></div>
+        </div>
       </div>
 
     </main>
+
   </div>
 
   <!-- INSTALL MODAL -->
@@ -1176,7 +1231,7 @@
         after install.</div>
       <div id="pwaBtn" style="display:none;margin-bottom:14px">
         <button onclick="doPwa()"
-          style="width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">&#8659;&nbsp;
+          style="width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">&#8659;&nbsp;
           Install Now</button>
       </div>
       <div
@@ -1197,7 +1252,8 @@
 
   <script>
     var mode = 'update', uR = [], dR = [], eP = [], mR = [], iR = [];
-    var titles = { update: 'Update Package', delete: 'Delete Package', sp: 'SP / Hook Package', mixed: 'Mixed Package', insert: 'Insert / Alter Package' };
+    var allModes = ['update','delete','sp','mixed','insert','screenshot','compare','format'];
+    var titles = { update: '✏️ Update Package', delete: '🗑️ Delete Package', sp: '⚙️ SP / Hook Package', mixed: '⚡ Mixed Package', insert: '➕ Insert / Alter Package', screenshot: '📸 Screenshot → SQL', compare: '🕵️ SQL Compare', format: '✨ SQL Formatter' };
 
     (function () {
       var d = new Date();
@@ -1267,11 +1323,47 @@
     function g(id) { return document.getElementById(id); }
     function v(id) { return g(id).value.trim(); }
     function e(s) { return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;'); }
+    var _editMode = false;
+    var _dryRunOpen = false;
     function show(t) {
-      g('pre').textContent = t; g('out').classList.remove('hide');
+      g('pre').textContent = t;
+      g('preEdit').value = t;
+      g('out').classList.remove('hide');
       g('outfn').textContent = 'case_' + (v('caseid') || 'package') + '_' + mode + '.pkg';
+      if (_editMode) toggleEdit();
+      // reset dry run
+      if (_dryRunOpen) toggleDryRun();
+      g('dryRunCard').classList.add('hide');
     }
     function hide() { g('out').classList.add('hide'); }
+    function toggleEdit() {
+      _editMode = !_editMode;
+      var btn = g('editToggleBtn');
+      if (_editMode) {
+        // sync textarea from pre then show it
+        g('preEdit').value = g('pre').textContent;
+        g('pre').style.display = 'none';
+        g('preEdit').style.display = 'block';
+        btn.innerHTML = '&#10003;&nbsp; Done';
+        btn.style.background = 'var(--green-bg)';
+        btn.style.color = 'var(--green)';
+        btn.style.borderColor = 'var(--green-border)';
+        g('preEdit').focus();
+      } else {
+        // sync pre from textarea
+        g('pre').textContent = g('preEdit').value;
+        g('pre').style.display = '';
+        g('preEdit').style.display = 'none';
+        btn.innerHTML = '&#9998;&nbsp; Edit';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }
+    }
+    function syncEdit() {
+      // keep pre in sync while editing (for copy/download)
+      g('pre').textContent = g('preEdit').value;
+    }
     function notes() {
       var createdby = v('createdby');
       var scriptname = v('scriptname');
@@ -1367,12 +1459,22 @@
       return prefix + result;
     }
 
+    // Split SET assignments — respects parens AND CASE...END blocks
     function sSet(str) {
-      var parts = [], depth = 0, start = 0;
-      for (var i = 0; i < str.length; i++) {
-        if (str[i] === '(') depth++;
-        else if (str[i] === ')') depth--;
-        else if (str[i] === ',' && depth === 0) { parts.push(str.slice(start, i).trim()); start = i + 1; }
+      var parts = [], depth = 0, caseDepth = 0, start = 0;
+      var i = 0;
+      while (i < str.length) {
+        if (str[i] === '(') { depth++; i++; continue; }
+        if (str[i] === ')') { depth--; i++; continue; }
+        // Detect CASE keyword
+        if (depth === 0 && /^CASE\b/i.test(str.slice(i))) { caseDepth++; i += 4; continue; }
+        // Detect END keyword
+        if (depth === 0 && caseDepth > 0 && /^END\b/i.test(str.slice(i))) { caseDepth--; i += 3; continue; }
+        // Split on comma only at depth 0 and outside CASE
+        if (str[i] === ',' && depth === 0 && caseDepth === 0) {
+          parts.push(str.slice(start, i).trim()); start = i + 1;
+        }
+        i++;
       }
       parts.push(str.slice(start).trim());
       return parts.filter(function (p) { return p.length > 0; });
@@ -1381,9 +1483,9 @@
     function extractSet(stmt) {
       var upper = stmt.toUpperCase();
       var setIdx = upper.indexOf(' SET ');
-      if (setIdx < 0) setIdx = upper.indexOf('\nSET');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET\n');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET ');
       if (setIdx < 0) return null;
-      // Use setEndIdx to find where assignments end (bare-SELECT-aware)
       var endIdx = setEndIdx(stmt);
       return stmt.slice(setIdx + 5, endIdx).trim();
     }
@@ -1427,21 +1529,25 @@
       return stmt.slice(lastWhere + 6).trim();
     }
 
-    // Find the index where the SET assignments end (top-level FROM or WHERE, respecting parens).
-    // NOTE: call normalizeBareSelects(stmt) before this to wrap bare SELECT values in parens.
+    // Find the index where the SET assignments end (top-level FROM or WHERE, respecting parens AND CASE..END).
     function setEndIdx(stmt) {
       var upper = stmt.toUpperCase();
       var setIdx = upper.indexOf(' SET ');
-      if (setIdx < 0) setIdx = upper.indexOf('\nSET');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET\n');
+      if (setIdx < 0) setIdx = upper.indexOf('\nSET ');
       if (setIdx < 0) return -1;
-      var i = setIdx + 5, depth = 0;
+      var i = setIdx + 5, depth = 0, caseDepth = 0;
       while (i < stmt.length) {
         var ch = stmt[i];
         if (ch === '(') { depth++; i++; continue; }
         if (ch === ')') { depth--; i++; continue; }
         if (depth === 0) {
           var up = stmt.slice(i).toUpperCase();
-          if (/^FROM[\s\r\n]/.test(up) || /^WHERE[\s\r\n\t]/.test(up)) return i;
+          if (/^CASE\b/.test(up)) { caseDepth++; i += 4; continue; }
+          if (/^END\b/.test(up) && caseDepth > 0) { caseDepth--; i += 3; continue; }
+          if (caseDepth === 0) {
+            if (/^FROM[\s\r\n]/.test(up) || /^WHERE[\s\r\n\t]/.test(up)) return i;
+          }
         }
         i++;
       }
@@ -1515,11 +1621,21 @@
 
     function sw(m) {
       mode = m;
-      ['update', 'delete', 'sp', 'mixed', 'insert'].forEach(function (x) {
-        g('p-' + x).classList.toggle('on', x === m);
-        g('n-' + x).classList.toggle('on', x === m);
+      // Auto-close dry run when switching tabs
+      if (_dryRunOpen) {
+        g('dryRunCard').classList.add('hide');
+        var db = g('dryRunBtn');
+        if (db) { db.innerHTML = '&#128257;&nbsp; Dry Run'; db.style.background = 'var(--blue-bg)'; db.style.color = 'var(--blue)'; db.style.borderColor = 'var(--blue-border)'; }
+        _dryRunOpen = false;
+      }
+      allModes.forEach(function (x) {
+        var pnl = g('p-' + x); if (pnl) pnl.classList.toggle('on', x === m);
+        var nav = g('n-' + x); if (nav) nav.classList.toggle('on', x === m);
       });
-      g('pageTitle').textContent = titles[m];
+      g('pageTitle').textContent = titles[m] || m;
+      var isToolPage = ['screenshot','compare','format'].indexOf(m) >= 0;
+      g('clientCard').style.display = isToolPage ? 'none' : '';
+      if (isToolPage) { hide(); return; }
       hide();
       if (m === 'sp') genSP();
       if (m === 'mixed' && mR.length) genM();
@@ -1551,7 +1667,8 @@
       parts.forEach(function (stmt) {
         stmt = stmt.replace(/;\s*$/, '').replace(/\bGO\b\s*$/i, '').trim();
         stmt = normalizeBareSelects(stmt);
-        var tm = stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i); if (!tm) { fail++; return; }
+        // Match UPDATE table (with optional alias, JOINs before SET)
+        var tm = stmt.match(/^UPDATE\s+\[?(\w+)\]?(?:\s+\w+)?/i); if (!tm) { fail++; return; }
         var tbl = tm[1];
         var whr = extractWhere(stmt);
         var frm = extractFrom(stmt);
@@ -1815,7 +1932,7 @@
         stmt = stmt.replace(/;\s*$/, '').replace(/\bGO\b\s*$/i, '').trim();
         stmt = normalizeBareSelects(stmt);
         if (/^UPDATE\s/i.test(stmt)) {
-          var tm = stmt.match(/^UPDATE\s+\[?(\w+)\]?\s+SET\s+/i); if (!tm) { fail++; return; }
+          var tm = stmt.match(/^UPDATE\s+\[?(\w+)\]?(?:\s+\w+)?/i); if (!tm) { fail++; return; }
           var tbl = tm[1];
           var whr = extractWhere(stmt);
           var frm = extractFrom(stmt);
@@ -1937,10 +2054,21 @@
 
     // COPY / DOWNLOAD
     function doCopy() {
-      navigator.clipboard.writeText(g('pre').textContent).then(function () {
+      var txt = g('pre').textContent;
+      function showOk() {
         var f = g('cpd'); f.classList.add('on');
         setTimeout(function () { f.classList.remove('on'); }, 2000);
-      });
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(showOk).catch(function(){ copyFallback(txt, showOk); });
+      } else { copyFallback(txt, showOk); }
+    }
+    function copyFallback(txt, cb) {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); if(cb) cb(); } catch(e){}
+      document.body.removeChild(ta);
     }
     function doDl() {
       var text = g('pre').textContent, cas = v('caseid') || 'package';
@@ -2335,6 +2463,1019 @@
       });
       if (!blocks.trim()) { hide(); return; }
       show(notes() + '\n\n//SQL\n\n' + blocks.trimEnd() + '\n\n//End SQL');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 📸 SCREENSHOT → SQL
+    // ══════════════════════════════════════════════════════
+    var ssImageData = null;
+
+    function handleSsFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        ssImageData = ev.target.result; // base64 data URL
+        g('ssPreview').src = ssImageData;
+        g('ssPreviewWrap').style.display = 'block';
+        g('ssBtn').style.display = '';
+        g('ssClear').style.display = '';
+        g('dropZone').querySelector('.drop-zone-text').textContent = file.name;
+        g('ssResult').classList.add('hide');
+        g('ssSt').innerHTML = '';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleSsDrop(ev) {
+      ev.preventDefault();
+      g('dropZone').classList.remove('drag');
+      var file = ev.dataTransfer.files[0];
+      if (file) handleSsFile(file);
+    }
+
+    function clearSs() {
+      ssImageData = null;
+      g('ssPreviewWrap').style.display = 'none';
+      g('ssBtn').style.display = 'none';
+      g('ssClear').style.display = 'none';
+      g('ssResult').classList.add('hide');
+      g('ssSt').innerHTML = '';
+      g('dropZone').querySelector('.drop-zone-text').textContent = 'Click to upload or drag & drop screenshot here';
+      g('ssFile').value = '';
+    }
+
+    async function runSsOcr() {
+      if (!ssImageData) { g('ssSt').innerHTML = '<span class="er">Error</span> No image loaded.'; return; }
+      var btn = g('ssBtn');
+      btn.disabled = true; btn.textContent = '⏳ Extracting…';
+      g('ssSt').innerHTML = '<span style="color:var(--text3)">Sending to Claude Vision…</span>';
+
+      // Extract base64 and media type
+      var match = ssImageData.match(/^data:(image\/\w+);base64,(.+)$/);
+      if (!match) { g('ssSt').innerHTML = '<span class="er">Error</span> Could not read image.'; btn.disabled = false; btn.innerHTML = '&#9654;&nbsp; Extract SQL from Image'; return; }
+      var mediaType = match[1], b64 = match[2];
+
+      try {
+        var resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 1000,
+            messages: [{
+              role: 'user',
+              content: [
+                { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
+                { type: 'text', text: 'Extract ALL SQL statements visible in this screenshot. Return ONLY the raw SQL statements, one per line, no explanations, no markdown code fences, no extra text. If multiple statements exist, separate them with a blank line. Preserve the original SQL exactly as shown.' }
+              ]
+            }]
+          })
+        });
+        var data = await resp.json();
+        if (data.error) throw new Error(data.error.message);
+        var sql = data.content.filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n').trim();
+        g('ssSql').value = sql;
+        g('ssResult').classList.remove('hide');
+        g('ssSt').innerHTML = '<span class="ok">&#10003; Done</span> SQL extracted. Review and send to a package tab.';
+      } catch(err) {
+        g('ssSt').innerHTML = '<span class="er">Error</span> ' + (err.message || 'API call failed.');
+      }
+      btn.disabled = false; btn.innerHTML = '&#9654;&nbsp; Extract SQL from Image';
+    }
+
+    function ssSendTo(tab) {
+      var sql = g('ssSql').value.trim();
+      if (!sql) return;
+      var fieldMap = { update: 'uq', delete: 'dq', mixed: 'mq', insert: 'iq', sp: 'spc' };
+      var field = fieldMap[tab];
+      if (field) { g(field).value = sql; }
+      sw(tab);
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 🕵️ SQL COMPARE  — word-level diff
+    // ══════════════════════════════════════════════════════
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function tokenise(str) {
+      return str.match(/\s+|\w+|[^\w\s]/g) || [];
+    }
+
+    function lcsArr(a, b) {
+      var m = a.length, n = b.length;
+      if (m > 600) { a = a.slice(0,600); m = 600; }
+      if (n > 600) { b = b.slice(0,600); n = 600; }
+      var dp = [];
+      for (var i=0;i<=m;i++) { dp[i] = new Array(n+1).fill(0); }
+      for (var i=1;i<=m;i++) for (var j=1;j<=n;j++)
+        dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j],dp[i][j-1]);
+      var res=[]; var i=m,j=n;
+      while(i>0||j>0){
+        if(i>0&&j>0&&a[i-1]===b[j-1]){res.unshift({t:'eq',v:a[i-1]});i--;j--;}
+        else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){res.unshift({t:'add',v:b[j-1]});j--;}
+        else{res.unshift({t:'rem',v:a[i-1]});i--;}
+      }
+      return res;
+    }
+
+    // Build intra-line highlighted HTML for side A (shows rem) and side B (shows add)
+    // Only highlight non-whitespace tokens — spaces/tabs are always shown as-is
+    function buildSideHtml(ops, side) {
+      var html = '';
+      ops.forEach(function(op) {
+        var isWs = op.v.trim() === '';
+        if (op.t === 'eq' || isWs) {
+          // Equal tokens OR pure whitespace → always render plain, no highlight
+          html += esc(op.v);
+        } else if (op.t === 'rem' && side === 'a') {
+          html += '<mark class="hl-rem">' + esc(op.v) + '</mark>';
+        } else if (op.t === 'add' && side === 'b') {
+          html += '<mark class="hl-add">' + esc(op.v) + '</mark>';
+        }
+        // rem on side b / add on side a → token doesn't exist on this side, skip (don't render)
+      });
+      return html;
+    }
+
+    function runCompare() {
+      var a = g('cmpA').value, b = g('cmpB').value;
+      if (!a.trim() && !b.trim()) { g('cmpCard').classList.add('hide'); return; }
+
+      // Trim each line so trailing spaces / extra newlines don't cause false diffs
+      var aLines = a.split('\n').map(function(l){ return l.trimEnd(); }).filter(function(l,i,arr){ return l || i < arr.length-1; });
+      var bLines = b.split('\n').map(function(l){ return l.trimEnd(); }).filter(function(l,i,arr){ return l || i < arr.length-1; });
+      // Remove trailing empty lines
+      while (aLines.length && !aLines[aLines.length-1].trim()) aLines.pop();
+      while (bLines.length && !bLines[bLines.length-1].trim()) bLines.pop();
+
+      var lineDiff = lcsArr(aLines, bLines);
+
+      var aHtml = '', bHtml = '';
+      var adds = 0, rems = 0, eqs = 0, changed = 0;
+
+      var i = 0;
+      while (i < lineDiff.length) {
+        var op = lineDiff[i];
+        if (op.t === 'rem' && i+1 < lineDiff.length && lineDiff[i+1].t === 'add') {
+          var remLine = op.v, addLine = lineDiff[i+1].v;
+          var tokA = tokenise(remLine), tokB = tokenise(addLine);
+          var wordOps = lcsArr(tokA, tokB);
+          // Only count as "modified" if there's a real non-whitespace difference
+          var realDiff = wordOps.some(function(o){ return o.t !== 'eq' && o.v.trim() !== ''; });
+          if (realDiff) {
+            changed++;
+            aHtml += '<div class="diff-line mod">'  + buildSideHtml(wordOps, 'a') + '</div>';
+            bHtml += '<div class="diff-line mod2">' + buildSideHtml(wordOps, 'b') + '</div>';
+          } else {
+            // Lines are effectively identical (only whitespace differs) — show as equal
+            eqs++;
+            aHtml += '<div class="diff-line eq">' + esc(remLine) + '</div>';
+            bHtml += '<div class="diff-line eq">' + esc(addLine) + '</div>';
+          }
+          i += 2;
+        } else if (op.t === 'rem') {
+          rems++;
+          aHtml += '<div class="diff-line rem">- ' + esc(op.v) + '</div>';
+          bHtml += '<div class="diff-line ghost">&nbsp;</div>';
+          i++;
+        } else if (op.t === 'add') {
+          adds++;
+          aHtml += '<div class="diff-line ghost">&nbsp;</div>';
+          bHtml += '<div class="diff-line add">+ ' + esc(op.v) + '</div>';
+          i++;
+        } else {
+          eqs++;
+          aHtml += '<div class="diff-line eq">' + esc(op.v) + '</div>';
+          bHtml += '<div class="diff-line eq">' + esc(op.v) + '</div>';
+          i++;
+        }
+      }
+
+      // If nothing different at all
+      if (!changed && !adds && !rems) {
+        g('cmpOutA').innerHTML = '<div class="diff-line eq" style="font-style:italic;color:var(--text3)">✓ Identical (no differences found)</div>';
+        g('cmpOutB').innerHTML = '<div class="diff-line eq" style="font-style:italic;color:var(--text3)">✓ Identical</div>';
+        g('cmpSum').innerHTML = '<div class="diff-pill eq">= Identical</div>';
+        g('cmpCard').classList.remove('hide');
+        return;
+      }
+
+      g('cmpOutA').innerHTML = aHtml || '<div class="diff-line eq">(empty)</div>';
+      g('cmpOutB').innerHTML = bHtml || '<div class="diff-line eq">(empty)</div>';
+      g('cmpSum').innerHTML =
+        (changed ? '<div class="diff-pill chg">~' + changed + ' modified</div>' : '') +
+        (adds    ? '<div class="diff-pill add">+' + adds + ' added</div>' : '') +
+        (rems    ? '<div class="diff-pill rem">-' + rems + ' removed</div>' : '') +
+        '<div class="diff-pill eq">=' + eqs + ' unchanged</div>';
+      g('cmpCard').classList.remove('hide');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // ✨ SQL FORMATTER  — proper clause-aware parser
+    // ══════════════════════════════════════════════════════
+    function runFormat() {
+      var raw = g('fmtIn').value.trim();
+      if (!raw) { g('fmtCard').classList.add('hide'); return; }
+      var formatted = formatSQL(raw, true);
+      g('fmtOut').textContent = formatted;
+      g('fmtCard').classList.remove('hide');
+    }
+
+    // ── Tokeniser that respects string literals and parens ──
+    // Returns array of token objects: {type:'kw'|'str'|'punc'|'ws'|'word', val}
+    function sqlTokenise(sql) {
+      var tokens = [], i = 0, s = sql;
+      while (i < s.length) {
+        // String literal
+        if (s[i] === "'" || s[i] === '"') {
+          var q = s[i], j = i+1;
+          while (j < s.length) { if (s[j]===q && s[j+1]===q) { j+=2; continue; } if (s[j]===q) { j++; break; } j++; }
+          tokens.push({type:'str', val:s.slice(i,j)}); i=j; continue;
+        }
+        // Line comment
+        if (s[i]==='-' && s[i+1]==='-') {
+          var j=i; while(j<s.length && s[j]!=='\n') j++;
+          tokens.push({type:'comment', val:s.slice(i,j)}); i=j; continue;
+        }
+        // Block comment
+        if (s[i]==='/' && s[i+1]==='*') {
+          var j=i+2; while(j<s.length && !(s[j]==='*'&&s[j+1]==='/')) j++; j+=2;
+          tokens.push({type:'comment', val:s.slice(i,j)}); i=j; continue;
+        }
+        // Whitespace
+        if (/\s/.test(s[i])) {
+          var j=i; while(j<s.length && /\s/.test(s[j])) j++;
+          tokens.push({type:'ws', val:s.slice(i,j)}); i=j; continue;
+        }
+        // Punctuation
+        if (/[(),;.]/.test(s[i])) { tokens.push({type:'punc', val:s[i]}); i++; continue; }
+        // Operator
+        if (/[=<>!+\-*\/]/.test(s[i])) { tokens.push({type:'op', val:s[i]}); i++; continue; }
+        // Word / identifier
+        var j=i; while(j<s.length && /[\w@#$\[\]]/.test(s[j])) j++;
+        if (j>i) { tokens.push({type:'word', val:s.slice(i,j)}); i=j; continue; }
+        tokens.push({type:'other', val:s[i]}); i++;
+      }
+      return tokens;
+    }
+
+    // Uppercase SQL keywords in token stream (only 'word' tokens)
+    var SQL_KW = new Set(['SELECT','DISTINCT','FROM','WHERE','AND','OR','NOT','IN','EXISTS','BETWEEN','LIKE','IS','NULL','AS','ON','JOIN','INNER','LEFT','RIGHT','FULL','OUTER','CROSS','SET','UPDATE','DELETE','INSERT','INTO','VALUES','ORDER','BY','GROUP','HAVING','UNION','ALL','INTERSECT','EXCEPT','CASE','WHEN','THEN','ELSE','END','BEGIN','IF','ELSE','RETURN','EXEC','EXECUTE','WITH','TOP','PERCENT','DESC','ASC','GO','CREATE','ALTER','DROP','TABLE','VIEW','PROCEDURE','PROC','FUNCTION','TRIGGER','INDEX','COLUMN','ADD','CONSTRAINT','PRIMARY','KEY','FOREIGN','REFERENCES','DEFAULT','UNIQUE','CHECK','NOTNULL','AVG','SUM','COUNT','MAX','MIN','GETDATE','ISNULL','COALESCE','CAST','CONVERT','LEN','TRIM','LTRIM','RTRIM','REPLACE','SUBSTRING','CHARINDEX','DATEDIFF','DATEADD','YEAR','MONTH','DAY','IDENTITY','NVARCHAR','VARCHAR','INT','BIGINT','DATETIME','DATE','BIT','DECIMAL','NUMERIC','FLOAT']);
+
+    function upperKwTokens(tokens) {
+      return tokens.map(function(t) {
+        if (t.type === 'word' && SQL_KW.has(t.val.toUpperCase()))
+          return {type:t.type, val:t.val.toUpperCase()};
+        return t;
+      });
+    }
+
+    // Reconstruct flat string from tokens (no formatting)
+    function flatStr(tokens) {
+      return tokens.map(function(t){ return t.val; }).join('');
+    }
+
+    // ── Top-level clause splitter ──────────────────────────
+    // Splits tokens into clause groups at depth 0.
+    // Each group: {kw: 'SELECT'|'FROM'|..., tokens:[]}
+    var TOP_CLAUSES = ['SELECT','FROM','WHERE','SET','UPDATE','DELETE','INSERT','INTO','VALUES',
+      'ORDER BY','GROUP BY','HAVING','UNION ALL','UNION','INTERSECT','EXCEPT',
+      'LEFT JOIN','LEFT OUTER JOIN','RIGHT JOIN','RIGHT OUTER JOIN','INNER JOIN',
+      'CROSS JOIN','FULL OUTER JOIN','FULL JOIN','JOIN',
+      'BEGIN','END','EXEC','EXECUTE','GO','WITH','RETURN','IF','ELSE'];
+
+    function splitClauses(tokens) {
+      // We walk tokens at depth 0 and detect top-clause keywords
+      var groups = [], current = {kw:'', tokens:[]};
+      var depth = 0;
+      var i = 0;
+
+      function peekKw(pos) {
+        // Build a word from consecutive word tokens (skipping single ws) at this pos, depth 0
+        // Try longest match first
+        var words = [];
+        var j = pos;
+        while (j < tokens.length && words.length < 4) {
+          var t = tokens[j];
+          if (t.type === 'ws') { j++; continue; }
+          if (t.type === 'word') { words.push(t.val.toUpperCase()); j++; }
+          else break;
+        }
+        // Try 3-word, 2-word, 1-word combos
+        for (var len = Math.min(words.length, 3); len >= 1; len--) {
+          var cand = words.slice(0,len).join(' ');
+          if (TOP_CLAUSES.indexOf(cand) >= 0) return {kw:cand, len:len};
+        }
+        return null;
+      }
+
+      while (i < tokens.length) {
+        var t = tokens[i];
+        if (t.type === 'str' || t.type === 'comment') { current.tokens.push(t); i++; continue; }
+        if (t.val === '(') { depth++; current.tokens.push(t); i++; continue; }
+        if (t.val === ')') { depth--; current.tokens.push(t); i++; continue; }
+
+        if (depth === 0 && t.type === 'word') {
+          var pk = peekKw(i);
+          if (pk) {
+            // flush current
+            if (current.kw || current.tokens.length) groups.push(current);
+            current = {kw: pk.kw, tokens:[]};
+            // consume the keyword tokens
+            var consumed = 0;
+            while (i < tokens.length && consumed < pk.len) {
+              if (tokens[i].type === 'word') { consumed++; }
+              i++;
+            }
+            continue;
+          }
+        }
+        current.tokens.push(t); i++;
+      }
+      if (current.kw || current.tokens.length) groups.push(current);
+      return groups;
+    }
+
+    // ── Split comma-separated items at depth 0 ────────────
+    function splitByComma(tokens) {
+      var items = [], cur = [], depth = 0;
+      tokens.forEach(function(t) {
+        if (t.val === '(') { depth++; cur.push(t); }
+        else if (t.val === ')') { depth--; cur.push(t); }
+        else if (t.val === ',' && depth === 0) { items.push(cur); cur = []; }
+        else cur.push(t);
+      });
+      if (cur.length) items.push(cur);
+      return items;
+    }
+
+    // Strip leading/trailing ws tokens
+    function trimToks(toks) {
+      var a=0, b=toks.length-1;
+      while(a<=b && toks[a].type==='ws') a++;
+      while(b>=a && toks[b].type==='ws') b--;
+      return toks.slice(a,b+1);
+    }
+
+    // ── Split AND/OR at depth 0 ───────────────────────────
+    function splitByAndOr(tokens) {
+      var parts = [], cur = [], depth = 0;
+      var i = 0;
+      while (i < tokens.length) {
+        var t = tokens[i];
+        if (t.val === '(') { depth++; cur.push(t); i++; }
+        else if (t.val === ')') { depth--; cur.push(t); i++; }
+        else if (depth === 0 && t.type === 'word' && /^(AND|OR)$/i.test(t.val)) {
+          // flush current part (without op), then start new part with this op as prefix
+          parts.push({op: '', toks: cur});
+          cur = [];
+          // carry the AND/OR as the op of the NEXT part
+          var op = t.val.toUpperCase();
+          i++;
+          // collect rest until next AND/OR at depth 0
+          var nextCur = [];
+          while (i < tokens.length) {
+            var t2 = tokens[i];
+            if (t2.val === '(') { depth++; nextCur.push(t2); i++; }
+            else if (t2.val === ')') { depth--; nextCur.push(t2); i++; }
+            else if (depth === 0 && t2.type === 'word' && /^(AND|OR)$/i.test(t2.val)) { break; }
+            else { nextCur.push(t2); i++; }
+          }
+          parts.push({op: op, toks: nextCur});
+        } else { cur.push(t); i++; }
+      }
+      // flush any remaining
+      if (cur.length) parts.push({op: '', toks: cur});
+      return parts;
+    }
+
+    // ── Main format function ──────────────────────────────
+    function formatSQL(sql, upperKw) {
+      // Split by GO at depth 0
+      var stmts = splitByGo(sql);
+      return stmts.map(function(s){ return formatOneStmt(s.trim(), upperKw); }).filter(Boolean).join('\nGO\n\n');
+    }
+
+    function splitByGo(sql) {
+      // Split on standalone GO lines
+      return sql.split(/\n\s*GO\s*(?:\n|$)/i).map(function(s){ return s.trim(); }).filter(Boolean);
+    }
+
+    function formatOneStmt(sql, upperKw) {
+      var tokens = sqlTokenise(sql);
+      if (upperKw) tokens = upperKwTokens(tokens);
+
+      var groups = splitClauses(tokens);
+      if (!groups.length) return sql;
+
+      var lines = [];
+      var ind = '  ';
+
+      groups.forEach(function(grp) {
+        if (!grp.kw && !grp.tokens.length) return;
+
+        var bodyToks = trimToks(grp.tokens);
+        var kw = grp.kw;
+        if (!kw && bodyToks.length) { lines.push(flatStr(bodyToks)); return; }
+
+        var joinKw = /JOIN/.test(kw);
+        var andOrExpand = (kw === 'WHERE' || kw === 'HAVING');
+
+        // ── UPDATE: just "UPDATE table [alias]" on one line ──
+        if (kw === 'UPDATE') {
+          lines.push('UPDATE ' + flatStr(bodyToks));
+          return;
+        }
+
+        // ── JOIN: table ON condition on one line ──
+        if (joinKw) {
+          var onIdx = -1, dep = 0;
+          for (var ii = 0; ii < bodyToks.length; ii++) {
+            if (bodyToks[ii].val === '(') dep++;
+            else if (bodyToks[ii].val === ')') dep--;
+            else if (dep === 0 && bodyToks[ii].type === 'word' && bodyToks[ii].val.toUpperCase() === 'ON') { onIdx = ii; break; }
+          }
+          if (onIdx >= 0) {
+            var tblPart = flatStr(trimToks(bodyToks.slice(0, onIdx)));
+            var onPart  = flatStr(trimToks(bodyToks.slice(onIdx + 1)));
+            lines.push(kw + ' ' + tblPart + ' ON ' + onPart);
+          } else {
+            lines.push(kw + ' ' + flatStr(bodyToks));
+          }
+          return;
+        }
+
+        // ── SET: comma-split at depth 0, each assignment on own line ──
+        // But CASE...END blocks must be kept intact
+        if (kw === 'SET') {
+          var assignments = splitSetAssignments(bodyToks);
+          lines.push('SET');
+          assignments.forEach(function(a, idx) {
+            var str = flatStr(trimToks(a));
+            // Format CASE WHEN nicely inside each assignment
+            str = formatCaseInline(str);
+            lines.push(ind + str + (idx < assignments.length - 1 ? ',' : ''));
+          });
+          return;
+        }
+
+        // ── SELECT columns: comma-expand ──
+        if (/^(SELECT|INSERT INTO|VALUES|ORDER BY|GROUP BY)$/.test(kw)) {
+          var items = splitByComma(bodyToks).map(function(t){ return flatStr(trimToks(t)); });
+          lines.push(kw);
+          items.forEach(function(item, idx) {
+            lines.push(ind + item + (idx < items.length - 1 ? ',' : ''));
+          });
+          return;
+        }
+
+        // ── FROM: just inline ──
+        if (kw === 'FROM') {
+          lines.push('FROM');
+          lines.push(ind + flatStr(bodyToks));
+          return;
+        }
+
+        // ── WHERE / HAVING: AND/OR expand ──
+        if (andOrExpand) {
+          var parts = splitByAndOr(bodyToks);
+          lines.push(kw);
+          parts.forEach(function(p) {
+            var t = flatStr(trimToks(p.toks));
+            if (!t) return;
+            if (p.op) lines.push(ind + p.op + ' ' + t);
+            else lines.push(ind + t);
+          });
+          return;
+        }
+
+        // Default
+        if (!bodyToks.length) { lines.push(kw); return; }
+        lines.push(kw);
+        lines.push(ind + flatStr(bodyToks));
+      });
+
+      return lines.join('\n');
+    }
+
+    // Split SET body into individual assignments at depth-0 commas,
+    // but never split inside CASE...END blocks
+    function splitSetAssignments(tokens) {
+      var parts = [], cur = [], depth = 0, caseDepth = 0;
+      tokens.forEach(function(t) {
+        var up = t.val.toUpperCase();
+        if (t.val === '(') depth++;
+        else if (t.val === ')') depth--;
+        else if (t.type === 'word' && up === 'CASE') caseDepth++;
+        else if (t.type === 'word' && up === 'END') caseDepth--;
+        if (t.val === ',' && depth === 0 && caseDepth === 0) {
+          parts.push(cur); cur = [];
+        } else {
+          cur.push(t);
+        }
+      });
+      if (cur.length) parts.push(cur);
+      return parts;
+    }
+
+    // Format CASE WHEN THEN ELSE END inline with consistent spacing
+    function formatCaseInline(str) {
+      return str
+        .replace(/\bCASE\b/gi,  'CASE')
+        .replace(/\bWHEN\b/gi,  '\n    WHEN')
+        .replace(/\bTHEN\b/gi,  ' THEN')
+        .replace(/\bELSE\b/gi,  '\n    ELSE')
+        .replace(/\bEND\b/gi,   '\n  END');
+    }
+
+    function doFmtCopy() {
+      var txt = g('fmtOut').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() {
+          var el = g('fmtCpd'); el.style.opacity = '1';
+          setTimeout(function(){ el.style.opacity = '0'; }, 2000);
+        }).catch(function(){ fmtCopyFallback(txt); });
+      } else { fmtCopyFallback(txt); }
+    }
+    function fmtCopyFallback(txt) {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      var el = g('fmtCpd'); el.style.opacity = '1';
+      setTimeout(function(){ el.style.opacity = '0'; }, 2000);
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 💬 FEEDBACK
+    // ══════════════════════════════════════════════════════
+    var FEEDBACK_URL = 'https://script.google.com/macros/s/AKfycbyPRHiLgPoXgyYL8MPyUgMnlH6BnR1_QY7uhzNDvh1HfZMIPWEO0Saag_fIsOmTr_er/exec';
+    var fbType = 'feedback', fbRating = 0;
+
+    function openFeedback() {
+      fbType = 'feedback'; fbRating = 0;
+      g('fbMsg').value = ''; g('fbName').value = '';
+      g('fbStatus').style.display = 'none';
+      g('fbBtnTxt').innerHTML = '🚀&nbsp; Submit';
+      g('fbSubmitBtn').disabled = false;
+      setFbType('feedback'); setRating(0);
+      var m = g('feedbackModal');
+      m.style.display = 'flex';
+      setTimeout(function(){ m.style.opacity = '1'; }, 10);
+    }
+
+    function closeFeedback() {
+      var m = g('feedbackModal');
+      m.style.opacity = '0';
+      setTimeout(function(){ m.style.display = 'none'; }, 200);
+    }
+
+    function setFbType(t) {
+      fbType = t;
+      var fbTab = g('fbTabFeedback'), sgTab = g('fbTabSuggestion');
+      fbTab.className = 'fb-tab';
+      sgTab.className = 'fb-tab';
+      if (t === 'feedback') {
+        fbTab.className = 'fb-tab fb-tab-active feedback-active';
+        g('fbSubmitBtn').style.background = 'var(--accent)';
+        g('fbSubmitBtn').style.borderColor = 'var(--accent)';
+        g('fbRatingSection').style.display = 'block';
+      } else {
+        sgTab.className = 'fb-tab fb-tab-active suggestion-active';
+        g('fbSubmitBtn').style.background = 'var(--purple)';
+        g('fbSubmitBtn').style.borderColor = 'var(--purple)';
+        g('fbRatingSection').style.display = 'none';
+        fbRating = 0; setRating(0); // reset rating
+      }
+    }
+
+    function setRating(v) {
+      fbRating = v;
+      document.querySelectorAll('.fb-star').forEach(function(s) {
+        s.classList.toggle('active', parseInt(s.dataset.v) <= v);
+      });
+    }
+
+    async function submitFeedback() {
+      var msg = g('fbMsg').value.trim();
+      if (!msg) {
+        g('fbMsg').style.borderColor = 'var(--red)';
+        setTimeout(function(){ g('fbMsg').style.borderColor = ''; }, 1500);
+        return;
+      }
+      if (!fbRating && fbType === 'feedback') {
+        g('fbStatus').style.display = 'block';
+        g('fbStatus').style.color = 'var(--red)';
+        g('fbStatus').textContent = 'Please select a rating ★';
+        return;
+      }
+
+      g('fbSubmitBtn').disabled = true;
+      g('fbBtnTxt').innerHTML = '⏳&nbsp; Submitting...';
+      g('fbStatus').style.display = 'none';
+
+      var url = FEEDBACK_URL
+        + '?t='       + Date.now()
+        + '&type='    + encodeURIComponent(fbType)
+        + '&rating='  + encodeURIComponent(fbRating || '-')
+        + '&name='    + encodeURIComponent(g('fbName').value.trim() || 'Anonymous')
+        + '&message=' + encodeURIComponent(msg)
+        + '&page='    + encodeURIComponent(mode);
+
+      // Script works — use fetch no-cors, ignore response (CORS blocks it but data goes through)
+      fetch(url, { method: 'GET', mode: 'no-cors' });
+
+      // Show success immediately — script is confirmed working
+      setTimeout(function() {
+        g('fbBtnTxt').innerHTML = '✅&nbsp; Submitted!';
+        g('fbStatus').style.display = 'block';
+        g('fbStatus').style.color = 'var(--green)';
+        g('fbStatus').textContent = 'Thank you! Your ' + fbType + ' has been recorded 🙏';
+        setTimeout(function(){ closeFeedback(); }, 2000);
+      }, 800);
+    }
+
+    // ── DARK MODE ──
+    (function() {
+      if (localStorage.getItem('dm') === '1') {
+        document.body.classList.add('dark');
+        var ic = document.getElementById('dmIcon');
+        var lb = document.getElementById('dmLabel');
+        if (ic) ic.textContent = '☀️';
+        if (lb) lb.textContent = 'Light';
+      }
+    })();
+    function toggleDark() {
+      var isDark = document.body.classList.toggle('dark');
+      var ic = document.getElementById('dmIcon');
+      var lb = document.getElementById('dmLabel');
+      if (ic) ic.textContent = isDark ? '☀️' : '🌙';
+      if (lb) lb.textContent = isDark ? 'Light' : 'Dark';
+      localStorage.setItem('dm', isDark ? '1' : '0');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 🔁 DRY RUN
+    // ══════════════════════════════════════════════════════
+    function toggleDryRun() {
+      if (_dryRunOpen) {
+        g('dryRunCard').classList.add('hide');
+        g('dryRunBtn').style.background = 'var(--blue-bg)';
+        g('dryRunBtn').style.color = 'var(--blue)';
+        g('dryRunBtn').innerHTML = '&#128257;&nbsp; Dry Run';
+        _dryRunOpen = false;
+        return;
+      }
+      var pkg = g('pre').textContent.trim();
+      if (!pkg) return;
+      var selects = convertToDryRun(pkg);
+      if (!selects) {
+        var btn = g('dryRunBtn');
+        btn.innerHTML = '&#10005;&nbsp; No UPDATE/DELETE found';
+        btn.style.color = 'var(--red)';
+        btn.style.borderColor = 'var(--red-border)';
+        btn.style.background = 'var(--red-bg)';
+        setTimeout(function(){
+          btn.innerHTML = '&#128257;&nbsp; Dry Run';
+          btn.style.color = 'var(--blue)';
+          btn.style.borderColor = 'var(--blue-border)';
+          btn.style.background = 'var(--blue-bg)';
+        }, 2500);
+        return;
+      }
+      g('dryPre').textContent = selects;
+      g('dryRunCard').classList.remove('hide');
+      g('dryRunBtn').style.background = 'var(--blue)';
+      g('dryRunBtn').style.color = '#fff';
+      g('dryRunBtn').style.borderColor = 'var(--blue)';
+      g('dryRunBtn').innerHTML = '&#128257;&nbsp; Dry Run ON';
+      _dryRunOpen = true;
+      g('dryRunCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function convertToDryRun(pkg) {
+      var selects = [];
+      var seen = {};
+
+      var re = /\/\/SQL\s*([\s\S]*?)\/\/End SQL/gi;
+      var m, found = false;
+      while ((m = re.exec(pkg)) !== null) {
+        found = true;
+        processStmts(m[1].trim(), selects, seen);
+      }
+      if (!found) processStmts(pkg, selects, seen);
+
+      return selects.length ? selects.join('\nGO\n\n') : null;
+    }
+
+    function processStmts(block, selects, seen) {
+      seen = seen || {};
+      var stmts = block.split(/\bGO\b/i);
+      stmts.forEach(function(stmt) {
+        stmt = stmt.trim().replace(/;\s*$/, '');
+        if (!stmt) return;
+
+        var lines = stmt.split('\n');
+        var chunks = [], cur = null, caseDepth = 0, parenDepth = 0;
+
+        lines.forEach(function(line) {
+          var t = line.trim().toUpperCase();
+          if (/\bCASE\b/.test(t)) caseDepth++;
+          if (/\bEND\b/.test(t) && caseDepth > 0) caseDepth--;
+          parenDepth += (line.match(/\(/g)||[]).length - (line.match(/\)/g)||[]).length;
+          if (parenDepth < 0) parenDepth = 0;
+
+          if (caseDepth === 0 && parenDepth === 0 && (/^UPDATE\s/i.test(line.trim()) || /^DELETE\s/i.test(line.trim()))) {
+            if (cur !== null) chunks.push(cur);
+            cur = line;
+          } else if (cur !== null) {
+            cur += '\n' + line;
+          }
+        });
+        if (cur !== null) chunks.push(cur);
+
+        chunks.forEach(function(chunk) {
+          chunk = chunk.trim().replace(/;\s*$/, '');
+          var sel = null;
+          if (/^UPDATE\s/i.test(chunk)) sel = convertUpdateToSelect(chunk);
+          else if (/^DELETE\s/i.test(chunk)) sel = convertDeleteToSelect(chunk);
+          if (sel) {
+            // Deduplicate by normalising whitespace
+            var key = sel.replace(/\s+/g,' ').trim();
+            if (!seen[key]) { seen[key] = true; selects.push(sel); }
+          }
+        });
+      });
+    }
+
+    function convertUpdateToSelect(stmt) {
+      var upper = stmt.toUpperCase();
+
+      var firstNl = stmt.indexOf('\n');
+      var searchFrom = firstNl >= 0 ? firstNl : 0;
+      var setPos = upper.indexOf('\nSET', searchFrom);
+      if (setPos < 0) {
+        var sp = upper.indexOf(' SET ', searchFrom);
+        if (sp < 0) return null;
+        setPos = sp;
+      }
+
+      var afterSet = stmt.slice(setPos);
+      var fromPos = findTopLevelKeyword(afterSet, 'FROM');
+      var wherePos = findTopLevelKeyword(afterSet, 'WHERE');
+
+      // Extract SET assignments to get column names
+      var setEnd = fromPos >= 0 ? fromPos : (wherePos >= 0 ? wherePos : afterSet.length);
+      var setBody = afterSet.slice(4, setEnd).trim(); // skip 'SET'
+      var cols = extractSetColumns(setBody);
+      var selectCols = cols.length ? cols.join(',\n  ') : '*';
+
+      if (fromPos >= 0) {
+        var fromEnd = wherePos >= 0 ? wherePos : afterSet.length;
+        var fromBlock = afterSet.slice(fromPos + 4, fromEnd).trim();
+        var whr = wherePos >= 0 ? afterSet.slice(wherePos + 5).trim().replace(/;\s*$/, '') : '';
+        var out = 'SELECT\n  ' + selectCols + '\nFROM ' + fromBlock;
+        if (whr) out += '\nWHERE ' + whr;
+        return out + ';';
+      } else {
+        var m = stmt.match(/^UPDATE\s+(\[?\w+\]?)(?:\s+(\w+))?/i);
+        if (!m) return null;
+        var whr = extractWhere(stmt);
+        var out = 'SELECT\n  ' + selectCols + '\nFROM ' + m[1] + (m[2] ? ' ' + m[2] : '');
+        if (whr) out += '\nWHERE ' + whr;
+        return out + ';';
+      }
+    }
+
+    // Extract just the column names from SET assignments
+    function extractSetColumns(setBody) {
+      var cols = [];
+      // Split assignments at depth-0 commas (respect CASE...END and parens)
+      var parts = [], cur = '', depth = 0, cd = 0;
+      for (var i = 0; i < setBody.length; i++) {
+        var c = setBody[i];
+        if (c === '(') { depth++; cur += c; continue; }
+        if (c === ')') { depth--; cur += c; continue; }
+        var up = setBody.slice(i).toUpperCase();
+        if (depth === 0) {
+          if (/^CASE\b/.test(up)) { cd++; cur += c; continue; }
+          if (/^END\b/.test(up) && cd > 0) { cd--; cur += c; continue; }
+          if (c === ',' && depth === 0 && cd === 0) { parts.push(cur.trim()); cur = ''; continue; }
+        }
+        cur += c;
+      }
+      if (cur.trim()) parts.push(cur.trim());
+
+      parts.forEach(function(part) {
+        // Each part is: col = value  or  table.col = value
+        var eqIdx = part.indexOf('=');
+        if (eqIdx < 0) return;
+        var colPart = part.slice(0, eqIdx).trim();
+        // Remove table alias prefix (e.g. T.Column1 → T.Column1, keep as-is for clarity)
+        cols.push(colPart);
+      });
+      return cols;
+    }
+
+    // Find keyword at depth 0 (not inside parens or CASE...END)
+    function findTopLevelKeyword(str, kw) {
+      var depth = 0, caseDepth = 0;
+      for (var i = 0; i < str.length; i++) {
+        if (str[i] === '(') { depth++; continue; }
+        if (str[i] === ')') { depth--; continue; }
+        if (depth === 0) {
+          var up = str.slice(i).toUpperCase();
+          if (/^CASE\b/.test(up)) { caseDepth++; i += 3; continue; }
+          if (/^END\b/.test(up) && caseDepth > 0) { caseDepth--; i += 2; continue; }
+          if (caseDepth === 0 && up.slice(0, kw.length) === kw && /[\s\n(]/.test(up[kw.length] || ' ')) {
+            return i;
+          }
+        }
+      }
+      return -1;
+    }
+
+    function convertDeleteToSelect(stmt) {
+      // DELETE [alias] FROM table [alias] [JOIN...] WHERE ...
+      // DELETE FROM table WHERE ...
+      var upper = stmt.toUpperCase();
+
+      // Try: DELETE FROM table
+      var m1 = stmt.match(/^DELETE\s+FROM\s+(\[?\w+\]?)(?:\s+(\w+))?/i);
+      // Try: DELETE alias FROM table alias JOIN...
+      var m2 = stmt.match(/^DELETE\s+(\w+)\s+FROM\s+(\[?\w+\]?)(?:\s+(\w+))?/i);
+
+      var tbl, alias, fromIdx;
+      if (m2) {
+        tbl = m2[2]; alias = m2[3] || m2[1];
+      } else if (m1) {
+        tbl = m1[1]; alias = m1[2] || '';
+      } else {
+        // DELETE table WHERE ...
+        var m3 = stmt.match(/^DELETE\s+(\[?\w+\]?)(?:\s+(\w+))?/i);
+        if (!m3) return null;
+        tbl = m3[1]; alias = m3[2] || '';
+      }
+
+      // Extract JOINs
+      fromIdx = upper.indexOf('FROM ');
+      var afterFrom = fromIdx >= 0 ? stmt.slice(fromIdx + 5) : stmt;
+      var whereIdx = afterFrom.toUpperCase().indexOf('WHERE');
+      var joinStr = '';
+      if (whereIdx > 0) {
+        var mid = afterFrom.slice(afterFrom.indexOf(alias || tbl) + (alias||tbl).length, whereIdx).trim();
+        if (/JOIN/i.test(mid)) joinStr = '\n' + mid;
+      }
+
+      var whr = extractWhere(stmt);
+      var out = 'SELECT *\nFROM ' + tbl + (alias ? ' ' + alias : '') + joinStr;
+      if (whr) out += '\nWHERE ' + whr;
+      return out + ';';
+    }
+
+    function doDryCopy() {
+      var txt = g('dryPre').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() {
+          var el = g('dryCpd'); el.style.opacity = '1';
+          setTimeout(function(){ el.style.opacity = '0'; }, 2000);
+        }).catch(function(){ dryCopyFallback(txt); });
+      } else { dryCopyFallback(txt); }
+    }
+    function dryCopyFallback(txt) {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      var el = g('dryCpd'); el.style.opacity = '1';
+      setTimeout(function(){ el.style.opacity = '0'; }, 2000);
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 🧠 EXPLAIN PACKAGE
+    // ══════════════════════════════════════════════════════
+    function closeExplain() { g('explainModal').classList.remove('on'); }
+
+    var explainLoadMsgs = [
+      'Reading your package...', 'Counting operations...', 'Analysing tables...',
+      'Checking WHERE clauses...', 'Almost done...'
+    ];
+
+    async function doExplain() {
+      var pkg = g('pre').textContent.trim();
+      if (!pkg) return;
+
+      // Show modal
+      g('explainModal').classList.add('on');
+      g('explainLoading').style.display = 'block';
+      g('explainResult').style.display = 'none';
+      g('explainErr').style.display = 'none';
+
+      // Cycle loading messages
+      var msgIdx = 0;
+      var msgTimer = setInterval(function() {
+        msgIdx = (msgIdx + 1) % explainLoadMsgs.length;
+        var el = g('explainLoadTxt');
+        if (el) el.textContent = explainLoadMsgs[msgIdx];
+      }, 1800);
+
+      try {
+        var resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 1000,
+            messages: [{
+              role: 'user',
+              content: `You are a SQL package analyser. Analyse this SQL data fix package and respond ONLY with a JSON object, no markdown, no extra text.
+
+Package:
+${pkg}
+
+Respond with exactly this JSON structure:
+{
+  "summary": "One clear sentence: what this package does overall",
+  "operations": [
+    {"type": "UPDATE|DELETE|INSERT|ALTER|EXEC|SP", "table": "TableName", "detail": "short plain english detail e.g. sets SADDR1 for SCODE=100223", "count": "1 row|multiple rows|unknown"}
+  ],
+  "risk": "LOW|MEDIUM|HIGH",
+  "riskReason": "brief reason why e.g. no WHERE clause on DELETE, or bulk update on large table, or safe single-row update",
+  "caseId": "case number if found, else null",
+  "clientName": "client name if found, else null"
+}`
+            }]
+          })
+        });
+
+        clearInterval(msgTimer);
+        var data = await resp.json();
+        if (data.error) throw new Error(data.error.message);
+
+        var raw = data.content.filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('').trim();
+        raw = raw.replace(/```json|```/g, '').trim();
+        var info = JSON.parse(raw);
+
+        // Build badges
+        var typeColors = {
+          UPDATE: { bg:'var(--accent-bg)', border:'var(--accent-border)', color:'var(--accent)' },
+          DELETE: { bg:'var(--red-bg)', border:'var(--red-border)', color:'var(--red)' },
+          INSERT: { bg:'var(--purple-bg)', border:'var(--purple-border)', color:'var(--purple)' },
+          ALTER:  { bg:'var(--amber-bg)', border:'var(--amber-border)', color:'var(--amber)' },
+          EXEC:   { bg:'var(--blue-bg)', border:'var(--blue-border)', color:'var(--blue)' },
+          SP:     { bg:'var(--amber-bg)', border:'var(--amber-border)', color:'var(--amber)' }
+        };
+
+        // Count ops by type
+        var typeCounts = {};
+        (info.operations||[]).forEach(function(op){
+          typeCounts[op.type] = (typeCounts[op.type]||0) + 1;
+        });
+
+        var badgeHtml = '';
+        Object.keys(typeCounts).forEach(function(type) {
+          var c = typeColors[type] || { bg:'var(--surface2)', border:'var(--border)', color:'var(--text2)' };
+          badgeHtml += '<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;background:'+c.bg+';border:1px solid '+c.border+';color:'+c.color+'">'+typeCounts[type]+' '+type+'</span>';
+        });
+        if (info.caseId) badgeHtml += '<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;background:var(--surface2);border:1px solid var(--border);color:var(--text3)">Case #'+info.caseId+'</span>';
+        g('explainBadges').innerHTML = badgeHtml;
+
+        // Build main explanation text
+        var opsHtml = '<p style="margin-bottom:10px;color:var(--text);font-weight:500">'+esc(info.summary)+'</p>';
+        if (info.operations && info.operations.length) {
+          opsHtml += '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">';
+          info.operations.forEach(function(op, i) {
+            var c = typeColors[op.type] || { bg:'var(--surface2)', border:'var(--border2)', color:'var(--text2)' };
+            opsHtml += '<div style="display:flex;align-items:flex-start;gap:10px;font-size:13px">' +
+              '<span style="flex-shrink:0;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;background:'+c.bg+';color:'+c.color+';border:1px solid '+c.border+';margin-top:1px">'+op.type+'</span>' +
+              '<span><strong style="color:var(--text);font-family:\'Fira Code\',monospace;font-size:12px">'+esc(op.table)+'</strong> — '+esc(op.detail)+'<span style="color:var(--text3);font-size:11px;margin-left:6px">('+esc(op.count)+')</span></span>' +
+              '</div>';
+          });
+          opsHtml += '</div>';
+        }
+        g('explainText').innerHTML = opsHtml;
+
+        // Risk badge
+        var riskMap = {
+          LOW:    { bg:'var(--green-bg)', border:'var(--green-border)', color:'var(--green)', icon:'🟢' },
+          MEDIUM: { bg:'var(--amber-bg)', border:'var(--amber-border)', color:'var(--amber)', icon:'🟡' },
+          HIGH:   { bg:'var(--red-bg)',   border:'var(--red-border)',   color:'var(--red)',   icon:'🔴' }
+        };
+        var r = riskMap[info.risk] || riskMap.MEDIUM;
+        g('explainRisk').style.background = r.bg;
+        g('explainRisk').style.borderColor = r.border;
+        g('explainRisk').style.color = r.color;
+        g('explainRisk').innerHTML = r.icon + ' <strong>'+info.risk+' RISK</strong> — ' + esc(info.riskReason);
+
+        g('explainLoading').style.display = 'none';
+        g('explainResult').style.display = 'block';
+
+      } catch(err) {
+        clearInterval(msgTimer);
+        g('explainLoading').style.display = 'none';
+        g('explainErr').style.display = 'block';
+        g('explainErr').textContent = 'Could not explain: ' + (err.message || 'Unknown error');
+      }
     }
 
     // PWA
