@@ -793,9 +793,6 @@
         </button>
 
         <div class="nav-label" style="margin-top:10px;border-left-color:var(--purple)">🛠️&nbsp; Tools</div>
-        <button class="nav-item" id="n-screenshot" onclick="sw('screenshot')">
-          <span class="ni">&#128247;</span> Screenshot → SQL
-        </button>
         <button class="nav-item" id="n-compare" onclick="sw('compare')">
           <span class="ni">&#128270;</span> SQL Compare
         </button>
@@ -1050,44 +1047,6 @@
         </div>
       </div>
 
-      <!-- SCREENSHOT → SQL -->
-      <div class="pnl" id="p-screenshot">
-        <div class="card">
-          <div class="sec">📸 Screenshot → SQL <em>— AI-powered OCR via Claude Vision</em></div>
-          <div class="inf">
-            Upload or paste a screenshot of SQL queries (from SSMS, DataGrip, Notepad, etc).
-            Claude Vision will extract all SQL statements from the image.
-          </div>
-          <div class="drop-zone" id="dropZone" onclick="document.getElementById('ssFile').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleSsDrop(event)">
-            <input type="file" id="ssFile" accept="image/*" onchange="handleSsFile(this.files[0])" style="display:none">
-            <div class="drop-zone-icon">📷</div>
-            <div class="drop-zone-text">Click to upload or drag & drop screenshot here</div>
-            <div class="drop-zone-sub">PNG, JPG, WEBP supported</div>
-          </div>
-          <div id="ssPreviewWrap" style="display:none">
-            <img id="ssPreview" class="preview-img" alt="Preview">
-          </div>
-          <div class="brow">
-            <button class="btn dk" onclick="runSsOcr()" id="ssBtn" style="display:none">&#9654;&nbsp; Extract SQL from Image</button>
-            <button class="btn" onclick="clearSs()" id="ssClear" style="display:none">&#8635;&nbsp; Clear</button>
-          </div>
-          <div class="st" id="ssSt"></div>
-        </div>
-        <div class="card hide" id="ssResult">
-          <div class="sec">Extracted SQL <em>— review and send to a package tab</em></div>
-          <div id="ssExtracted" style="margin-bottom:12px">
-            <textarea id="ssSql" rows="10" style="font-size:12.5px"></textarea>
-          </div>
-          <div class="brow">
-            <button class="btn" onclick="ssSendTo('update')" style="color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg)">→ Send to Update</button>
-            <button class="btn" onclick="ssSendTo('delete')" style="color:var(--red);border-color:var(--red-border);background:var(--red-bg)">→ Send to Delete</button>
-            <button class="btn" onclick="ssSendTo('mixed')" style="color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)">→ Send to Mixed</button>
-            <button class="btn" onclick="ssSendTo('insert')" style="color:var(--purple);border-color:var(--purple-border);background:var(--purple-bg)">→ Send to Insert/Alter</button>
-            <button class="btn" onclick="ssSendTo('sp')" style="color:var(--amber);border-color:var(--amber-border);background:var(--amber-bg)">→ Send to SP/Hook</button>
-          </div>
-        </div>
-      </div>
-
       <!-- SQL COMPARE -->
       <div class="pnl" id="p-compare">
         <div class="card">
@@ -1252,8 +1211,8 @@
 
   <script>
     var mode = 'update', uR = [], dR = [], eP = [], mR = [], iR = [];
-    var allModes = ['update','delete','sp','mixed','insert','screenshot','compare','format'];
-    var titles = { update: '✏️ Update Package', delete: '🗑️ Delete Package', sp: '⚙️ SP / Hook Package', mixed: '⚡ Mixed Package', insert: '➕ Insert / Alter Package', screenshot: '📸 Screenshot → SQL', compare: '🕵️ SQL Compare', format: '✨ SQL Formatter' };
+    var allModes = ['update','delete','sp','mixed','insert','compare','format'];
+    var titles = { update: '✏️ Update Package', delete: '🗑️ Delete Package', sp: '⚙️ SP / Hook Package', mixed: '⚡ Mixed Package', insert: '➕ Insert / Alter Package', compare: '🕵️ SQL Compare', format: '✨ SQL Formatter' };
 
     (function () {
       var d = new Date();
@@ -1633,18 +1592,18 @@
         var nav = g('n-' + x); if (nav) nav.classList.toggle('on', x === m);
       });
       g('pageTitle').textContent = titles[m] || m;
-      var isToolPage = ['screenshot','compare','format'].indexOf(m) >= 0;
+      var isToolPage = ['compare','format'].indexOf(m) >= 0;
       g('clientCard').style.display = isToolPage ? 'none' : '';
       if (isToolPage) { hide(); return; }
       hide();
-      if (m === 'sp') genSP();
+      if (m === 'sp') { setTimeout(function(){ genSP(); }, 30); }
       if (m === 'mixed' && mR.length) genM();
       if (m === 'insert' && iR.length) genIA();
     }
     function regen() {
       if (mode === 'update' && uR.length) genU();
       if (mode === 'delete' && dR.length) genD();
-      if (mode === 'sp') genSP();
+      if (mode === 'sp') { setTimeout(function(){ genSP(); }, 30); }
       if (mode === 'mixed' && mR.length) genM();
       if (mode === 'insert' && iR.length) genIA();
     }
@@ -1859,6 +1818,51 @@
       }
       genSP();
     }
+
+    // Extract ONLY the declared @params from SP procedure header (not body)
+    function getSpDeclaredParams() {
+      var code = g('spc').value;
+      // Find the parameter block between CREATE PROC ... AS/BEGIN
+      var headerMatch = code.match(/(?:CREATE|ALTER)\s+(?:OR\s+ALTER\s+)?(?:PROCEDURE|PROC)\s+[^\n]+?([\s\S]*?)(?:\bAS\b|\bBEGIN\b)/i);
+      if (!headerMatch) return [];
+      var header = headerMatch[1];
+      // Extract @ParamName from header
+      var params = [];
+      var re = /@(\w+)/g, m;
+      while ((m = re.exec(header)) !== null) {
+        params.push(m[1].toLowerCase());
+      }
+      return params;
+    }
+
+    // Validate EXEC row — count of comma-separated values must match declared param count
+    function validateExecParam(paramVal) {
+      var code = g('spc').value.trim();
+      if (!code) return null;
+      var declared = getSpDeclaredParams();
+      if (!declared.length) return null; // no params declared — no validation needed
+
+      // Count values in the exec row (split by comma at depth 0)
+      var val = paramVal.trim();
+      if (!val) return null; // blank = no-param EXEC — fine
+
+      var count = 0, depth = 0, inStr = false, strChar = '';
+      for (var i = 0; i < val.length; i++) {
+        var c = val[i];
+        if (inStr) { if (c === strChar) inStr = false; continue; }
+        if (c === "'" || c === '"') { inStr = true; strChar = c; if (count === 0) count = 1; continue; }
+        if (c === '(') { depth++; continue; }
+        if (c === ')') { depth--; continue; }
+        if (c === ',' && depth === 0) count++;
+      }
+      if (count === 0 && val.length > 0) count = 1;
+
+      if (count !== declared.length) {
+        return ['Expected ' + declared.length + ' parameter(s) (@' + declared.join(', @') + ') but got ' + count];
+      }
+      return null;
+    }
+
     function reE() {
       var tb = g('eb'); tb.innerHTML = '';
       if (!eP.length) {
@@ -1868,12 +1872,39 @@
       eP.forEach(function (p, i) {
         var tr = document.createElement('tr');
         tr.innerHTML = '<td><span class="nm">' + (i + 1) + '</span></td>' +
-          '<td><input type="text" value="' + e(p) + '" placeholder="e.g. \'1234\' — blank = no-param" oninput="eP[' + i + ']=this.value;genSP()"></td>' +
+          '<td>' +
+            '<input type="text" value="' + e(p) + '" placeholder="e.g. \'1234\' — blank = no-param" oninput="eP[' + i + ']=this.value;validateRow(' + i + ',this);genSP()">' +
+            '<div id="perr_' + i + '" style="font-size:11px;color:var(--red);margin-top:3px;display:none"></div>' +
+          '</td>' +
           '<td><button class="xb" onclick="eP.splice(' + i + ',1);reE();genSP()">&#215;</button></td>';
         tb.appendChild(tr);
       });
     }
-    function addE() { eP.push(''); reE(); genSP(); }
+
+    function validateRow(i, input) {
+      var val = input.value.trim();
+      var errEl = document.getElementById('perr_' + i);
+      if (!errEl) return;
+      if (!val) { errEl.style.display = 'none'; return; }
+      var undeclared = validateExecParam(val);
+      if (undeclared) {
+        errEl.textContent = '⚠️ Variable not declared in SP: ' + undeclared.join(', ');
+        errEl.style.display = 'block';
+        input.style.borderColor = 'var(--red)';
+      } else {
+        errEl.style.display = 'none';
+        input.style.borderColor = '';
+      }
+    }
+
+    function addE() {
+      eP.push(''); reE(); genSP();
+      // focus last input
+      setTimeout(function() {
+        var inputs = g('eb').querySelectorAll('input[type=text]');
+        if (inputs.length) inputs[inputs.length-1].focus();
+      }, 50);
+    }
     function clrExec() { eP = []; g('spn').value = ''; g('spn').dataset.m = ''; reE(); genSP(); }
     function importBulk() {
       var raw = g('bulk').value, st = g('bst');
@@ -1894,6 +1925,13 @@
       reE(); genSP();
       st.innerHTML = '<span class="ok">&#10003; Imported</span> <strong>' + added + '</strong> row(s).';
       g('bulk').value = '';
+
+      // Validate all rows after import
+      setTimeout(function() {
+        g('eb').querySelectorAll('input[type=text]').forEach(function(inp, i) {
+          validateRow(i, inp);
+        });
+      }, 50);
     }
     // Splits SP textarea content into pre-CREATE part and CREATE part
     function splitSpCode(code) {
@@ -2464,94 +2502,6 @@
       if (!blocks.trim()) { hide(); return; }
       show(notes() + '\n\n//SQL\n\n' + blocks.trimEnd() + '\n\n//End SQL');
     }
-
-    // ══════════════════════════════════════════════════════
-    // 📸 SCREENSHOT → SQL
-    // ══════════════════════════════════════════════════════
-    var ssImageData = null;
-
-    function handleSsFile(file) {
-      if (!file || !file.type.startsWith('image/')) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        ssImageData = ev.target.result; // base64 data URL
-        g('ssPreview').src = ssImageData;
-        g('ssPreviewWrap').style.display = 'block';
-        g('ssBtn').style.display = '';
-        g('ssClear').style.display = '';
-        g('dropZone').querySelector('.drop-zone-text').textContent = file.name;
-        g('ssResult').classList.add('hide');
-        g('ssSt').innerHTML = '';
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function handleSsDrop(ev) {
-      ev.preventDefault();
-      g('dropZone').classList.remove('drag');
-      var file = ev.dataTransfer.files[0];
-      if (file) handleSsFile(file);
-    }
-
-    function clearSs() {
-      ssImageData = null;
-      g('ssPreviewWrap').style.display = 'none';
-      g('ssBtn').style.display = 'none';
-      g('ssClear').style.display = 'none';
-      g('ssResult').classList.add('hide');
-      g('ssSt').innerHTML = '';
-      g('dropZone').querySelector('.drop-zone-text').textContent = 'Click to upload or drag & drop screenshot here';
-      g('ssFile').value = '';
-    }
-
-    async function runSsOcr() {
-      if (!ssImageData) { g('ssSt').innerHTML = '<span class="er">Error</span> No image loaded.'; return; }
-      var btn = g('ssBtn');
-      btn.disabled = true; btn.textContent = '⏳ Extracting…';
-      g('ssSt').innerHTML = '<span style="color:var(--text3)">Sending to Claude Vision…</span>';
-
-      // Extract base64 and media type
-      var match = ssImageData.match(/^data:(image\/\w+);base64,(.+)$/);
-      if (!match) { g('ssSt').innerHTML = '<span class="er">Error</span> Could not read image.'; btn.disabled = false; btn.innerHTML = '&#9654;&nbsp; Extract SQL from Image'; return; }
-      var mediaType = match[1], b64 = match[2];
-
-      try {
-        var resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 1000,
-            messages: [{
-              role: 'user',
-              content: [
-                { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
-                { type: 'text', text: 'Extract ALL SQL statements visible in this screenshot. Return ONLY the raw SQL statements, one per line, no explanations, no markdown code fences, no extra text. If multiple statements exist, separate them with a blank line. Preserve the original SQL exactly as shown.' }
-              ]
-            }]
-          })
-        });
-        var data = await resp.json();
-        if (data.error) throw new Error(data.error.message);
-        var sql = data.content.filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n').trim();
-        g('ssSql').value = sql;
-        g('ssResult').classList.remove('hide');
-        g('ssSt').innerHTML = '<span class="ok">&#10003; Done</span> SQL extracted. Review and send to a package tab.';
-      } catch(err) {
-        g('ssSt').innerHTML = '<span class="er">Error</span> ' + (err.message || 'API call failed.');
-      }
-      btn.disabled = false; btn.innerHTML = '&#9654;&nbsp; Extract SQL from Image';
-    }
-
-    function ssSendTo(tab) {
-      var sql = g('ssSql').value.trim();
-      if (!sql) return;
-      var fieldMap = { update: 'uq', delete: 'dq', mixed: 'mq', insert: 'iq', sp: 'spc' };
-      var field = fieldMap[tab];
-      if (field) { g(field).value = sql; }
-      sw(tab);
-    }
-
     // ══════════════════════════════════════════════════════
     // 🕵️ SQL COMPARE  — word-level diff
     // ══════════════════════════════════════════════════════
