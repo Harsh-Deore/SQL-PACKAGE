@@ -3183,6 +3183,7 @@
       if (fromPos >= 0) {
         var fromEnd = wherePos >= 0 ? wherePos : afterSet.length;
         var fromBlock = afterSet.slice(fromPos + 4, fromEnd).trim();
+        fromBlock = fromBlock.replace(/\s*\bWHERE\b[\s\S]*$/i, '').replace(/\s*\bSET\b[\s\S]*$/i, '').trim();
         var whr = wherePos >= 0 ? afterSet.slice(wherePos + 5).trim().replace(/;\s*$/, '') : '';
         var out = 'SELECT\n  ' + selectCols + '\nFROM ' + fromBlock;
         if (whr) out += '\nWHERE ' + whr;
